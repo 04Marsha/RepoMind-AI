@@ -1,17 +1,16 @@
-from fastapi import FastAPI, HTTPException
-from app.models.repository import RepositoryRequest
-from app.services.repository_service import repository_service
-from app.exceptions.repository_exception import InvalidRepositoryURLException
+# TMPDIR=$HOME/pip-temp pip install sentence-transformers
+# uvicorn app.main:app --reload --reload-dir app
+# https://github.com/octocat/Spoon-Knife
+# summarize this repo
 
-app = FastAPI()
+from fastapi import FastAPI
+from app.api.index import router as index_router
+from app.api.chat import router as chat_router
 
-@app.post("/repositories")
-def create_repository(request: RepositoryRequest):
-    try:
-        return repository_service.clone_repository(request.url)
+app = FastAPI(
+    title="RepoMind AI",
+    version="1.0.0"
+)
 
-    except InvalidRepositoryURLException:
-        raise HTTPException(
-            status_code=400,
-            detail="Invalid Github repository URL"
-        )
+app.include_router(index_router)
+app.include_router(chat_router)

@@ -1,0 +1,35 @@
+from app.services.github_service import GithubService
+from app.services.repository_analyzer import RepositoryAnalyzer
+from app.services.chunking_service import ChunkingService
+from app.services.embedding_service import EmbeddingService
+from app.services.vector_store import VectorStore
+from app.services.repository_service import RepositoryService
+from app.services.chat_service import ChatService
+from app.services.llm_service import LLMService
+from app.services.retriever import Retriever
+
+github_service = GithubService()
+repository_analyzer = RepositoryAnalyzer()
+chunking_service = ChunkingService()
+embedding_service = EmbeddingService()
+vector_store = VectorStore()
+
+repository_service = RepositoryService(
+    github_service=github_service,
+    repository_analyzer=repository_analyzer,
+    chunking_service=chunking_service,
+    embedding_service=embedding_service,
+    vector_store=vector_store
+)
+
+retriever = Retriever(
+    embedding_service=embedding_service,
+    vector_store=vector_store
+)
+
+llm_service = LLMService()
+
+chat_service = ChatService(
+    retriever=retriever,
+    llm_service=llm_service
+)

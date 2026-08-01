@@ -1,29 +1,39 @@
-from pathlib import Path
-from git import Repo
-
-from app.utils.validators import is_valid_github_url
-from app.exceptions.repository_exception import InvalidRepositoryURLException
+from app.services.github_service import GithubService
+from app.services.repository_analyzer import RepositoryAnalyzer
+from app.services.chunking_service import ChunkingService
+from app.services.embedding_service import EmbeddingService
+from app.services.vector_store import VectorStore
+from app.models.RepositoryMetadata import RepositoryMetadata
 
 class RepositoryService:
 
-    BASE_PATH = Path("repositories")
+    def __init__(
+            self,
+            github_service: GithubService,
+            repository_analyzer: RepositoryAnalyzer,
+            chunking_service: ChunkingService,
+            embedding_service: EmbeddingService,
+            vector_store: VectorStore
+        ):
+        self.github_service = github_service
+        self.repository_analyzer = repository_analyzer
+        self.chunking_service = chunking_service
+        self.embedding_service = embedding_service
+        self.vector_store = vector_store
 
-    def clone_repository(self, url: str):
+    # CLONING AND EMBEDDING
+    def index_repository(self, github_url: str) -> RepositoryMetadata:
+        self.vector_store.clear()
 
-        if not is_valid_github_url(url):
-            raise InvalidRepositoryURLException()
+        repo_path = self.github_service.clone_repository(github_url)
 
-        self.BASE_PATH.mkdir(exist_ok=True)
+        repository_metadata = self.repository_analyzer.analyze(repo_path)
 
-        repo_name = url.split("/")[-1]
+        files = self.repository_analyzer.index_repository(repo_path)
 
-        destination = self.BASE_PATH / repo_name
+        for file_metadata in files:
+            chunks = self.chunking_service.chunk_file(file_metadata)
+            embedded_chunks = self.embedding_service.embed_chunks(chunks)
+            self.vector_store.add_chunks(embedded_chunks)
 
-        Repo.clone_from(url, destination)
-
-        return {
-            "message": "Repository cloned successfully!",
-            "repository_url": url
-        }
-
-repository_service = RepositoryService()
+        return repository_metadata
