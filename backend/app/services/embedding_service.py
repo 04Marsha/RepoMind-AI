@@ -1,7 +1,7 @@
 from sentence_transformers import SentenceTransformer
 
-from app.models.TextChunk import TextChunk
-from app.models.EmbeddedChunk import EmbeddedChunk
+from app.models.chat.TextChunk import TextChunk
+from app.models.repository.EmbeddedChunk import EmbeddedChunk
 
 class EmbeddingService:
 

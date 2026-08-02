@@ -1,6 +1,6 @@
 from app.retrieval.retriever import Retriever
 from app.services.llm_service import LLMService
-from app.models.ChatResponse import ChatResponse
+from app.models.chat.ChatResponse import ChatResponse
 
 class ChatService:
 

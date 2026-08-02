@@ -1,6 +1,6 @@
 from google import genai
 
-from app.models.TextChunk import TextChunk
+from app.models.chat.TextChunk import TextChunk
 from app.core.config import Settings
 
 class LLMService:

@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException
 
-from app.models.IndexRepositoryRequest import IndexRepositoryRequest
+from app.models.indexing.IndexRepositoryRequest import IndexRepositoryRequest
 from app.exceptions.repository_exception import InvalidRepositoryURLException
 from app.core.dependencies import repository_service
 

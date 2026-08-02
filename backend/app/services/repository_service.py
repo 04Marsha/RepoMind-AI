@@ -3,7 +3,7 @@ from app.analyzers.repository.repository_analyzer import RepositoryAnalyzer
 from app.services.chunking_service import ChunkingService
 from app.services.embedding_service import EmbeddingService
 from app.services.vector_store import VectorStore
-from app.models.RepositoryMetadata import RepositoryMetadata
+from app.models.repository.RepositoryMetadata import RepositoryMetadata
 
 class RepositoryService:
 

@@ -1,8 +1,8 @@
 import re
 from pathlib import Path
 
-from app.models.FileMetadata import FileMetadata
-from app.models.RepositoryMetadata import RepositoryMetadata
+from app.models.repository.FileMetadata import FileMetadata
+from app.models.repository.RepositoryMetadata import RepositoryMetadata
 
 EXTENSION_LANGUAGE = {
     ".py": "Python",

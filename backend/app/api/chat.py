@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from app.models.ChatRequest import ChatRequest
+from app.models.chat.ChatRequest import ChatRequest
 from app.core.dependencies import chat_service
 
 router = APIRouter(prefix="/chat", tags=["Chat"])

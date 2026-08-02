@@ -1,7 +1,7 @@
 from pathlib import Path
 
 from app.analyzers.repository.repository_analyzer import RepositoryAnalyzer
-from app.models.RepositoryOverview import RepositoryOverview
+from app.models.repository.RepositoryOverview import RepositoryOverview
 
 class RepositoryAgent:
 

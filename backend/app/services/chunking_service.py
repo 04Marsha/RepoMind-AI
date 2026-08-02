@@ -1,5 +1,5 @@
-from app.models.FileMetadata import FileMetadata
-from app.models.TextChunk import TextChunk
+from app.models.repository.FileMetadata import FileMetadata
+from app.models.chat.TextChunk import TextChunk
 
 CHUNK_SIZE = 1000
 CHUNK_OVERLAP = 200
