@@ -1,5 +1,5 @@
-from app.services.embedding_service import EmbeddingService
-from app.services.vector_store import VectorStore
+from app.services.retrieval.embedding_service import EmbeddingService
+from app.services.retrieval.vector_store import VectorStore
 from app.models.chat.TextChunk import TextChunk
 
 class Retriever:

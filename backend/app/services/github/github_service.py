@@ -1,7 +1,7 @@
 from pathlib import Path
 from git import Repo
 
-from app.utils.validators import is_valid_github_url
+from app.core.validators import is_valid_github_url
 from app.exceptions.repository_exception import InvalidRepositoryURLException
 
 class GithubService:

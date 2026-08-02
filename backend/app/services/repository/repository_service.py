@@ -1,8 +1,8 @@
-from app.services.github_service import GithubService
+from app.services.github.github_service import GithubService
 from app.analyzers.repository.repository_analyzer import RepositoryAnalyzer
-from app.services.chunking_service import ChunkingService
-from app.services.embedding_service import EmbeddingService
-from app.services.vector_store import VectorStore
+from app.services.retrieval.chunking_service import ChunkingService
+from app.services.retrieval.embedding_service import EmbeddingService
+from app.services.retrieval.vector_store import VectorStore
 from app.models.repository.RepositoryMetadata import RepositoryMetadata
 
 class RepositoryService:
