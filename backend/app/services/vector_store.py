@@ -2,7 +2,7 @@ import chromadb
 
 from app.models.EmbeddedChunk import EmbeddedChunk
 from app.models.TextChunk import TextChunk
-from app.config import Settings
+from app.core.config import Settings
 
 class VectorStore:
 

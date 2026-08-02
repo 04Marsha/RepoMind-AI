@@ -1,5 +1,5 @@
 from app.services.github_service import GithubService
-from app.analyzers.repository_analyzer import RepositoryAnalyzer
+from app.analyzers.repository.repository_analyzer import RepositoryAnalyzer
 from app.services.chunking_service import ChunkingService
 from app.services.embedding_service import EmbeddingService
 from app.services.vector_store import VectorStore
