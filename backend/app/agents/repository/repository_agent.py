@@ -1,9 +1,9 @@
 from pathlib import Path
 
-from app.services.repository_analyzer import RepositoryAnalyzer
+from app.analyzers.repository_analyzer import RepositoryAnalyzer
 from app.models.RepositoryOverview import RepositoryOverview
 
-class RepositoryOverviewService:
+class RepositoryAgent:
 
     def __init__(self, repository_analyzer: RepositoryAnalyzer):
         self.repository_analyzer = repository_analyzer

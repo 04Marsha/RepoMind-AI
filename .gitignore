@@ -17,3 +17,6 @@ __pycache__/
 
 # ChromaDB
 backend/chroma_db/
+
+# Cloned Repositories
+backend/repositories/

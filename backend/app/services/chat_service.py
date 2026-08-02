@@ -1,4 +1,4 @@
-from app.services.retriever import Retriever
+from app.retrieval.retriever import Retriever
 from app.services.llm_service import LLMService
 from app.models.ChatResponse import ChatResponse
 

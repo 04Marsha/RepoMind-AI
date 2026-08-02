@@ -1,13 +1,13 @@
 from app.services.github_service import GithubService
-from app.services.repository_analyzer import RepositoryAnalyzer
+from app.analyzers.repository_analyzer import RepositoryAnalyzer
 from app.services.chunking_service import ChunkingService
 from app.services.embedding_service import EmbeddingService
 from app.services.vector_store import VectorStore
 from app.services.repository_service import RepositoryService
 from app.services.chat_service import ChatService
 from app.services.llm_service import LLMService
-from app.services.retriever import Retriever
-from app.services.repository_overview_service import RepositoryOverviewService
+from app.retrieval.retriever import Retriever
+from app.agents.repository.repository_agent import RepositoryAgent
 
 github_service = GithubService()
 repository_analyzer = RepositoryAnalyzer()
@@ -35,9 +35,9 @@ chat_service = ChatService(
     llm_service=llm_service
 )
 
-repository_overview_service = RepositoryOverviewService(
+repository_overview_service = RepositoryAgent(
     repository_analyzer=repository_analyzer
 )
 
-def get_repository_overview_service() -> RepositoryOverviewService:
+def get_repository_overview_service() -> RepositoryAgent:
     return repository_overview_service

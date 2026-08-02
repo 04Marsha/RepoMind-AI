@@ -1,12 +1,12 @@
 from fastapi import APIRouter, Depends, HTTPException
 from pathlib import Path
 from app.core.dependencies import get_repository_overview_service
-from app.services.repository_overview_service import RepositoryOverviewService
+from app.agents.repository.repository_agent import RepositoryAgent
 
 router = APIRouter(prefix="/repositories", tags=["Repository Overview"])
 
 @router.get("/overview/{repository_name}")
-def get_overview(repository_name: str, repository_overview_service: RepositoryOverviewService = Depends(
+def get_overview(repository_name: str, repository_agent: RepositoryAgent = Depends(
     get_repository_overview_service)):
     repo_path = Path(f"./repositories/{repository_name}")
 
@@ -16,4 +16,4 @@ def get_overview(repository_name: str, repository_overview_service: RepositoryOv
             detail="Repository not found."
         )
 
-    return repository_overview_service.get_repository_overview(repo_path)
+    return repository_agent.get_repository_overview(repo_path)
