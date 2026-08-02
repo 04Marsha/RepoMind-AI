@@ -1,9 +1,9 @@
 from app.services.github.github_service import GithubService
 from app.analyzers.repository.repository_analyzer import RepositoryAnalyzer
-from app.services.retrieval.chunking_service import ChunkingService
-from app.services.retrieval.embedding_service import EmbeddingService
+from app.services.indexing.repository_indexing_service import RepositoryIndexingService
 from app.services.retrieval.vector_store import VectorStore
 from app.models.repository.RepositoryMetadata import RepositoryMetadata
+from app.discovery.project_discovery import ProjectDiscovery
 
 class RepositoryService:
 
@@ -11,14 +11,14 @@ class RepositoryService:
             self,
             github_service: GithubService,
             repository_analyzer: RepositoryAnalyzer,
-            chunking_service: ChunkingService,
-            embedding_service: EmbeddingService,
+            project_discovery: ProjectDiscovery,
+            repository_indexing_service: RepositoryIndexingService,
             vector_store: VectorStore
         ):
         self.github_service = github_service
         self.repository_analyzer = repository_analyzer
-        self.chunking_service = chunking_service
-        self.embedding_service = embedding_service
+        self.project_discovery = project_discovery
+        self.repository_indexing_service = repository_indexing_service
         self.vector_store = vector_store
 
     # CLONING AND EMBEDDING
@@ -27,13 +27,10 @@ class RepositoryService:
 
         repo_path = self.github_service.clone_repository(github_url)
 
-        repository_metadata = self.repository_analyzer.analyze(repo_path)
+        repository_context = self.project_discovery.discover(repo_path)
 
-        files = self.repository_analyzer.index_repository(repo_path)
+        repository_metadata = self.repository_analyzer.analyze(repository_context)
 
-        for file_metadata in files:
-            chunks = self.chunking_service.chunk_file(file_metadata)
-            embedded_chunks = self.embedding_service.embed_chunks(chunks)
-            self.vector_store.add_chunks(embedded_chunks)
+        self.repository_indexing_service.index_repository(repository_context.project_root)
 
         return repository_metadata

@@ -3,6 +3,7 @@ from pathlib import Path
 
 from app.models.repository.FileMetadata import FileMetadata
 from app.models.repository.RepositoryMetadata import RepositoryMetadata
+from app.models.repository.RepositoryContext import RepositoryContext
 
 EXTENSION_LANGUAGE = {
     ".py": "Python",
@@ -141,14 +142,14 @@ class RepositoryAnalyzer:
         return "Unknown"
 
     # RETURNS THE INFORMATION ABOUT THE REPO
-    def analyze(self, repo_path: Path) -> RepositoryMetadata:
+    def analyze(self, context: RepositoryContext) -> RepositoryMetadata:
         return RepositoryMetadata(
-            repository_name = repo_path.name,
-            language = self.detect_language(repo_path),
-            has_readme = self.detect_readme(repo_path),
-            has_license = self.detect_license(repo_path),
-            dockerized = self.detect_docker(repo_path),
-            has_tests = self.detect_tests(repo_path)
+            repository_name=context.repository_name,
+            language=self.detect_language(context.project_root),
+            has_readme=self.detect_readme(context.project_root),
+            has_license=self.detect_license(context.project_root),
+            dockerized=self.detect_docker(context.project_root),
+            has_tests=self.detect_tests(context.project_root),
         )
 
     # CHECKS IF THE FILE EXISTS

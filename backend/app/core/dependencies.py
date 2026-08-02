@@ -8,18 +8,28 @@ from app.services.chat.chat_service import ChatService
 from app.services.llm.llm_service import LLMService
 from app.retrieval.retriever import Retriever
 from app.agents.repository.repository_agent import RepositoryAgent
+from app.discovery.project_discovery import ProjectDiscovery
+from app.services.indexing.repository_indexing_service import RepositoryIndexingService
 
 github_service = GithubService()
 repository_analyzer = RepositoryAnalyzer()
 chunking_service = ChunkingService()
 embedding_service = EmbeddingService()
 vector_store = VectorStore()
+project_discovery = ProjectDiscovery()
+
+repository_indexing_service = RepositoryIndexingService(
+    repository_analyzer=repository_analyzer,
+    chunking_service=chunking_service,
+    embedding_service=embedding_service,
+    vector_store=vector_store
+)
 
 repository_service = RepositoryService(
     github_service=github_service,
     repository_analyzer=repository_analyzer,
-    chunking_service=chunking_service,
-    embedding_service=embedding_service,
+    project_discovery=project_discovery,
+    repository_indexing_service=repository_indexing_service,
     vector_store=vector_store
 )
 
@@ -41,3 +51,6 @@ repository_overview_service = RepositoryAgent(
 
 def get_repository_overview_service() -> RepositoryAgent:
     return repository_overview_service
+
+def get_project_discovery() -> ProjectDiscovery:
+    return project_discovery
