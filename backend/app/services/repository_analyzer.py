@@ -1,3 +1,4 @@
+import re
 from pathlib import Path
 
 from app.models.FileMetadata import FileMetadata
@@ -38,19 +39,6 @@ LANGUAGE_FILES = {
     "Cargo.toml": "Rust",
 }
 
-PRIORITY_FILES = [
-    "README.md",
-    "README.rst",
-    "README.txt",
-    "pyproject.toml",
-    "requirements.txt",
-    "package.json",
-    "main.py",
-    "app.py",
-    "server.py",
-    "Dockerfile",
-]
-
 IGNORE_DIRECTORIES = {
     ".git",
     "__pycache__",
@@ -77,6 +65,72 @@ IGNORE_FILES = {
     "poetry.lock"
 }
 
+FRAMEWORKS = {
+    "fastapi": "FastAPI",
+    "django": "Django",
+    "flask": "Flask",
+    "@angular/core": "Angular",
+    "react": "React",
+    "vue": "Vue.js",
+    "next": "Next.js",
+    "express": "Express.js",
+    "spring-boot": "Spring Boot",
+    "gin": "Gin",
+    "fiber": "Fiber",
+    "actix-web": "Actix Web",
+    "rocket": "Rocket"
+}
+
+DOCUMENTATION_FILES = {
+    "README.md",
+    "README.rst",
+    "README.txt",
+    "CONTRIBUTING.md",
+    "CHANGELOG.md",
+    "LICENSE",
+}
+
+DOCUMENTATION_EXTENSIONS = {
+    ".md",
+    ".txt",
+}
+
+CONFIGURATION_FILES = {
+    "requirements.txt",
+    "pyproject.toml",
+    "package.json",
+    "package-lock.json",
+    "tsconfig.json",
+    "angular.json",
+    "vite.config.ts",
+    "vite.config.js",
+    "next.config.js",
+    "next.config.ts",
+    "Dockerfile",
+    "docker-compose.yml",
+    "docker-compose.yaml",
+    "pom.xml",
+    "build.gradle",
+    "go.mod",
+    "Cargo.toml",
+}
+
+DEPENDENCY_FILES = {
+    "requirements.txt",
+    "pyproject.toml",
+    "package.json",
+    "pom.xml",
+    "build.gradle",
+    "go.mod",
+    "Cargo.toml",
+}
+
+ENTRY_POINT_FILES = {
+    "main.py",
+    "app.py",
+    "server.py",
+}
+
 class RepositoryAnalyzer:
 
     # DETECTS THE LANGUAGE OF THE FILE 
@@ -87,7 +141,7 @@ class RepositoryAnalyzer:
         return "Unknown"
 
     # RETURNS THE INFORMATION ABOUT THE REPO
-    def analyze(self, repo_path: Path) -> dict:
+    def analyze(self, repo_path: Path) -> RepositoryMetadata:
         return RepositoryMetadata(
             repository_name = repo_path.name,
             language = self.detect_language(repo_path),
@@ -102,7 +156,7 @@ class RepositoryAnalyzer:
         return (repo_path / filename).is_file()
 
     # CHECKS IF A DIRECTORY/FOLDER EXISTS
-    def directory_exists(self, repo_path: Path, dirname: str):
+    def directory_exists(self, repo_path: Path, dirname: str) -> bool:
         return (repo_path / dirname).is_dir()
 
     # CHECKS IF A README FILE EXISTS
@@ -132,17 +186,15 @@ class RepositoryAnalyzer:
             return file
         return None
 
-    # FINDS THE IMPORTANT FILES IN THE REPO
-    def get_priority_files(self, repo_path: Path) -> list[Path]:
-        priority_files = []
-
-        for filename in PRIORITY_FILES:
+    # RETURNS THE FILES
+    def get_files(self, repo_path: Path, filenames: set[str]) -> list[Path]:
+        files = []
+        for filename in filenames:
             file = self.get_file(repo_path, filename)
-
             if file:
-                priority_files.append(file)
+                files.append(file)
 
-        return priority_files
+        return files
 
     # GETS THE FILES IN THE REPO, STORES AND RETURNS THEM
     def get_all_files(self, repo_path: Path) -> list[Path]:
@@ -193,3 +245,74 @@ class RepositoryAnalyzer:
             return file.read_text(encoding="utf-8")
         except Exception:
             return ""
+
+    # COUNTS THE TOTAL NUMBER OF FILES
+    def count_files(self, repo_path: Path) -> int:
+        return len(self.get_all_files(repo_path))
+
+    # COUNTS THE TOTAL NUMBER OF DIRECTORIES
+    def count_directories(self, repo_path: Path) -> int:
+        count = 0
+
+        for item in repo_path.iterdir():
+            if item.is_dir() and item.name not in IGNORE_DIRECTORIES:
+                count += 1
+                count += self.count_directories(item)
+        return count
+
+    # RETURNS ALL SOURCE FILES
+    def get_source_files(self, repo_path: Path) -> list[Path]:
+        files = self.get_all_files(repo_path)
+
+        return [
+            file for file in files if file.suffix in EXTENSION_LANGUAGE
+        ]
+
+    # COUNTS SOURCE FILES
+    def count_source_files(self, repo_path: Path) -> int:
+        return len(self.get_source_files(repo_path))
+
+    # DETECTS THE FRAMEWORK USED
+    def detect_framework(self, repo_path: Path) -> str:
+        for file in self.get_files(repo_path, DEPENDENCY_FILES):
+            content = self.read_file(file).lower()
+            words = re.findall(r"[A-Za-z0-9@._/-]+", content.lower())
+
+            for keyword, framework in FRAMEWORKS.items():
+                if keyword in words:
+                    return framework
+
+        return "Unknown"
+
+    # RETURNS THE DEPENDENCIES USED IN THE REPOSITORY
+    def find_dependencies(self, repo_path: Path) -> list[str]:
+        dependencies = set()
+
+        for file in self.get_files(repo_path, DEPENDENCY_FILES):
+            content = self.read_file(file)
+
+            for line in content.splitlines():
+                line = line.strip()
+
+                if not line or line.startswith("#"):
+                    continue
+
+                package = (line.split("==")[0].split(">=")[0].split("<=")[0].strip())
+                dependencies.add(package)
+        return sorted(dependencies)
+
+    # RETURNS ALL DOCUMENTATION FILES
+    def get_documentation_files(self, repo_path: Path) -> list[Path]:
+        return self.get_files(repo_path, DOCUMENTATION_FILES)
+
+    # COUNTS ALL DOCUMENTATION FILES
+    def count_documentation_files(self, repo_path: Path) -> int:
+        return len(self.get_documentation_files(repo_path))
+
+    # RETURNS ALL CONFIGURATION FILES
+    def get_configuration_files(self, repo_path: Path) -> list[Path]:
+        return self.get_files(repo_path, CONFIGURATION_FILES)
+
+    # COUNTS ALL CONFIGURATION FILES
+    def count_configuration_files(self, repo_path: Path) -> int:
+        return len(self.get_configuration_files(repo_path))

@@ -6,6 +6,7 @@
 from fastapi import FastAPI
 from app.api.index import router as index_router
 from app.api.chat import router as chat_router
+from app.api.overview import router as overview_router
 
 app = FastAPI(
     title="RepoMind AI",
@@ -14,3 +15,4 @@ app = FastAPI(
 
 app.include_router(index_router)
 app.include_router(chat_router)
+app.include_router(overview_router)

@@ -7,6 +7,7 @@ from app.services.repository_service import RepositoryService
 from app.services.chat_service import ChatService
 from app.services.llm_service import LLMService
 from app.services.retriever import Retriever
+from app.services.repository_overview_service import RepositoryOverviewService
 
 github_service = GithubService()
 repository_analyzer = RepositoryAnalyzer()
@@ -33,3 +34,10 @@ chat_service = ChatService(
     retriever=retriever,
     llm_service=llm_service
 )
+
+repository_overview_service = RepositoryOverviewService(
+    repository_analyzer=repository_analyzer
+)
+
+def get_repository_overview_service() -> RepositoryOverviewService:
+    return repository_overview_service
