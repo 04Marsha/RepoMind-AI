@@ -1,30 +1,3 @@
-TECHNOLOGIES = [
-    {
-        "name": "FastAPI",
-        "type": "backend_framework",
-        "keywords": ["fastapi"],
-        "package_files": ["requirements.txt", "pyproject.toml"]
-    },
-    {
-        "name": "Flask",
-        "type": "backend_framework",
-        "keywords": ["flask"],
-        "package_files": ["requirements.txt", "pyproject.toml"]
-    },
-    {
-        "name": "Angular",
-        "type": "frontend_framework",
-        "keywords": ["@angular/core"],
-        "package_files": ["package.json"]
-    },
-    {
-        "name": "React",
-        "type": "frontend_framework",
-        "keywords": ["react"],
-        "package_files": ["package.json"]
-    },
-]
-
 ENTRY_POINT_FILES = {
 
     # Python
@@ -54,14 +27,47 @@ ENTRY_POINT_FILES = {
 EXTENSION_LANGUAGE = {
     ".py": "Python",
     ".java": "Java",
-    ".ts": "TypeScript",
+    ".kt": "Kotlin",
+    ".kts": "Kotlin",
+
     ".js": "JavaScript",
-    ".tsx": "React",
-    ".jsx": "React",
+    ".jsx": "JavaScript",
+
+    ".ts": "TypeScript",
+    ".tsx": "TypeScript",
+
+    ".html": "HTML",
+    ".css": "CSS",
+    ".scss": "SCSS",
+    ".sass": "SASS",
+    ".less": "LESS",
+
     ".go": "Go",
     ".rs": "Rust",
     ".cpp": "C++",
-    ".c": "C"
+    ".cc": "C++",
+    ".cxx": "C++",
+    ".c": "C",
+    ".h": "C/C++",
+
+    ".cs": "C#",
+    ".php": "PHP",
+    ".rb": "Ruby",
+    ".swift": "Swift",
+    ".dart": "Dart",
+
+    ".vue": "Vue",
+    ".svelte": "Svelte",
+
+    ".sql": "SQL",
+    ".sh": "Shell",
+    ".ps1": "PowerShell",
+
+    ".yaml": "YAML",
+    ".yml": "YAML",
+    ".xml": "XML",
+    ".json": "JSON",
+    ".toml": "TOML",
 }
 
 LANGUAGE_FILES = {

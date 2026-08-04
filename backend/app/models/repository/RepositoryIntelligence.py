@@ -1,7 +1,8 @@
 from pydantic import BaseModel, Field
 
 class RepositoryIntelligence(BaseModel):
-    language: str | None = None
+    primary_language: str | None = None
+    languages: list[str] = Field(default_factory=list)
     backend_frameworks: list[str] = Field(default_factory=list)
     frontend_frameworks: list[str] = Field(default_factory=list)
     databases: list[str] = Field(default_factory=list)

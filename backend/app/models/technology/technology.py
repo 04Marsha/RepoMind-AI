@@ -14,7 +14,10 @@ class Technology(BaseModel):
         if any(file in config_files for file in self.config_files): 
             return True
 
-        if any(pattern in imports for pattern in self.import_patterns):
+        if any(module == pattern or module.startswith(pattern + ".")
+               for module in imports
+               for pattern in self.import_patterns
+            ):
             return True
 
         return False

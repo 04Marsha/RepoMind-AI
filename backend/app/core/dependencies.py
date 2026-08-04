@@ -20,9 +20,7 @@ chunking_service = ChunkingService()
 embedding_service = EmbeddingService()
 vector_store = VectorStore()
 project_discovery = ProjectDiscovery()
-technology_detector = TechnologyDetector()
 dependency_parser = DependencyParser()
-project_discovery = ProjectDiscovery()
 
 repository_analyzer = RepositoryAnalyzer(
     dependency_parser=dependency_parser
@@ -41,6 +39,10 @@ repository_service = RepositoryService(
     project_discovery=project_discovery,
     repository_indexing_service=repository_indexing_service,
     vector_store=vector_store
+)
+
+technology_detector = TechnologyDetector(
+    dependency_parser=dependency_parser
 )
 
 repository_intelligence_analyzer = RepositoryIntelligenceAnalyzer(

@@ -22,7 +22,8 @@ class RepositoryAgent:
 
         return RepositoryOverview(
             repository_name=metadata.repository_name,
-            primary_language=metadata.language,
+            primary_language=metadata.primary_language,
+            languages=metadata.languages,
             framework=(intelligence.backend_frameworks + intelligence.frontend_frameworks),
             total_files=self.repository_analyzer.count_files(context.project_root),
             total_directories=self.repository_analyzer.count_directories(repo_path),

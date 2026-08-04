@@ -14,7 +14,9 @@ class RepositoryIntelligenceAnalyzer:
 
     def analyze(self, context: RepositoryContext) -> RepositoryIntelligence:
         intelligence = RepositoryIntelligence()
-        intelligence.language = self.repository_analyzer.detect_language(context.project_root)
+        languages = self.repository_analyzer.detect_languages(context.project_root)
+        intelligence.languages = languages
+        intelligence.primary_language = (languages[0] if languages else "Unknown")
 
         technologies = self.technology_detector.detect(context)
 

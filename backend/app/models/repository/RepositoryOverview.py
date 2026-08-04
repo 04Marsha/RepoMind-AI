@@ -1,8 +1,9 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 class RepositoryOverview(BaseModel):
     repository_name: str
     primary_language: str
+    languages: list[str] = Field(default_factory=list)
     framework: list[str]
     total_files: int
     total_directories: int

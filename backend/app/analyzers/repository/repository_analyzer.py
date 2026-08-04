@@ -5,15 +5,14 @@ from app.models.repository.FileMetadata import FileMetadata
 from app.models.repository.RepositoryMetadata import RepositoryMetadata
 from app.models.repository.RepositoryContext import RepositoryContext
 from app.analyzers.repository.constants import (
-    EXTENSION_LANGUAGE, 
-    LANGUAGE_FILES, 
+    EXTENSION_LANGUAGE,
     IGNORE_DIRECTORIES, 
     IGNORE_FILES,
     DOCUMENTATION_FILES,
-    CONFIGURATION_FILES,
-    DEPENDENCY_FILES
+    CONFIGURATION_FILES
     )
 from app.analyzers.dependency.dependency_parser import DependencyParser
+from collections import Counter
 
 ALLOWED_EXTENSIONS = set(EXTENSION_LANGUAGE.keys())
 ALLOWED_EXTENSIONS.update({
@@ -34,16 +33,29 @@ class RepositoryAnalyzer:
 
     # DETECTS THE LANGUAGE OF THE FILE 
     def detect_language(self, repo_path: Path) -> str:
-        for item in repo_path.iterdir():
-            if item.name in LANGUAGE_FILES:
-                return LANGUAGE_FILES[item.name]
+        languages = self.detect_languages(repo_path)
+
+        if languages:
+            return languages[0]
         return "Unknown"
+
+    def detect_languages(self, repo_path: Path) -> list[str]:
+        language_counter = Counter()
+
+        for file in self.get_source_files(repo_path):
+            language = self.detect_file_language(file)
+
+            if language != "Unknown":
+                language_counter[language] += 1
+        return [language for language, _ in language_counter.most_common()]
 
     # RETURNS THE INFORMATION ABOUT THE REPO
     def analyze(self, context: RepositoryContext) -> RepositoryMetadata:
+        languages = self.detect_languages(context.project_root)
         return RepositoryMetadata(
             repository_name=context.repository_name,
-            language=self.detect_language(context.project_root),
+            primary_language=languages[0],
+            languages=languages,
             has_readme=self.detect_readme(context.project_root),
             has_license=self.detect_license(context.project_root),
             dockerized=self.detect_docker(context.project_root),

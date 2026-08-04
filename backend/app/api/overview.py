@@ -49,8 +49,10 @@ def repository_intelligence(request: IndexRepositoryRequest, analyzer: Repositor
     for context in projects:
         intelligence = analyzer.analyze(context)
 
-        if overall.language is None:
-            overall.language = intelligence.language
+        if overall.primary_language is None:
+            overall.primary_language = intelligence.primary_language
+
+        overall.languages.extend(intelligence.languages)
 
         if overall.package_manager is None:
             overall.package_manager = intelligence.package_manager
@@ -64,7 +66,7 @@ def repository_intelligence(request: IndexRepositoryRequest, analyzer: Repositor
         overall.build_tools.extend(intelligence.build_tools)
         overall.entry_points.extend(intelligence.entry_points)
 
-
+    overall.languages = sorted(set(overall.languages))
     overall.backend_frameworks = sorted(set(overall.backend_frameworks))
     overall.frontend_frameworks = sorted(set(overall.frontend_frameworks))
     overall.databases = sorted(set(overall.databases))
