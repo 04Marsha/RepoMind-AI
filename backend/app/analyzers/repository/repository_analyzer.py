@@ -1,22 +1,19 @@
-import re
+import json
 from pathlib import Path
 
 from app.models.repository.FileMetadata import FileMetadata
 from app.models.repository.RepositoryMetadata import RepositoryMetadata
 from app.models.repository.RepositoryContext import RepositoryContext
-
-EXTENSION_LANGUAGE = {
-    ".py": "Python",
-    ".java": "Java",
-    ".ts": "TypeScript",
-    ".js": "JavaScript",
-    ".tsx": "React",
-    ".jsx": "React",
-    ".go": "Go",
-    ".rs": "Rust",
-    ".cpp": "C++",
-    ".c": "C"
-}
+from app.analyzers.repository.constants import (
+    EXTENSION_LANGUAGE, 
+    LANGUAGE_FILES, 
+    IGNORE_DIRECTORIES, 
+    IGNORE_FILES,
+    DOCUMENTATION_FILES,
+    CONFIGURATION_FILES,
+    DEPENDENCY_FILES
+    )
+from app.analyzers.dependency.dependency_parser import DependencyParser
 
 ALLOWED_EXTENSIONS = set(EXTENSION_LANGUAGE.keys())
 ALLOWED_EXTENSIONS.update({
@@ -30,109 +27,10 @@ ALLOWED_EXTENSIONS.update({
     ".sql"
 })
 
-LANGUAGE_FILES = {
-    "requirements.txt": "Python",
-    "pyproject.toml": "Python",
-    "package.json": "JavaScript/TypeScript",
-    "pom.xml": "Java",
-    "build.gradle": "Java/Kotlin",
-    "go.mod": "Go",
-    "Cargo.toml": "Rust",
-}
-
-IGNORE_DIRECTORIES = {
-    ".git",
-    "__pycache__",
-    ".venv",
-    "venv",
-    "node_modules",
-    "dist",
-    "build",
-    "coverage",
-    ".idea",
-    ".vscode",
-    ".next",
-    ".angular",
-    "target",
-    "out"
-}
-
-IGNORE_FILES = {
-    ".env.example",
-    ".DS_Store",
-    "package-lock.json",
-    "yarn.lock",
-    "pnpm-lock.yaml",
-    "poetry.lock"
-}
-
-FRAMEWORKS = {
-    "fastapi": "FastAPI",
-    "django": "Django",
-    "flask": "Flask",
-    "@angular/core": "Angular",
-    "react": "React",
-    "vue": "Vue.js",
-    "next": "Next.js",
-    "express": "Express.js",
-    "spring-boot": "Spring Boot",
-    "gin": "Gin",
-    "fiber": "Fiber",
-    "actix-web": "Actix Web",
-    "rocket": "Rocket"
-}
-
-DOCUMENTATION_FILES = {
-    "README.md",
-    "README.rst",
-    "README.txt",
-    "CONTRIBUTING.md",
-    "CHANGELOG.md",
-    "LICENSE",
-}
-
-DOCUMENTATION_EXTENSIONS = {
-    ".md",
-    ".txt",
-}
-
-CONFIGURATION_FILES = {
-    "requirements.txt",
-    "pyproject.toml",
-    "package.json",
-    "package-lock.json",
-    "tsconfig.json",
-    "angular.json",
-    "vite.config.ts",
-    "vite.config.js",
-    "next.config.js",
-    "next.config.ts",
-    "Dockerfile",
-    "docker-compose.yml",
-    "docker-compose.yaml",
-    "pom.xml",
-    "build.gradle",
-    "go.mod",
-    "Cargo.toml",
-}
-
-DEPENDENCY_FILES = {
-    "requirements.txt",
-    "pyproject.toml",
-    "package.json",
-    "pom.xml",
-    "build.gradle",
-    "go.mod",
-    "Cargo.toml",
-}
-
-ENTRY_POINT_FILES = {
-    "main.py",
-    "app.py",
-    "server.py",
-}
-
 class RepositoryAnalyzer:
+
+    def __init__(self, dependency_parser: DependencyParser):
+        self.dependency_parser = dependency_parser
 
     # DETECTS THE LANGUAGE OF THE FILE 
     def detect_language(self, repo_path: Path) -> str:
@@ -273,34 +171,9 @@ class RepositoryAnalyzer:
     def count_source_files(self, repo_path: Path) -> int:
         return len(self.get_source_files(repo_path))
 
-    # DETECTS THE FRAMEWORK USED
-    def detect_framework(self, repo_path: Path) -> str:
-        for file in self.get_files(repo_path, DEPENDENCY_FILES):
-            content = self.read_file(file).lower()
-            words = re.findall(r"[A-Za-z0-9@._/-]+", content.lower())
-
-            for keyword, framework in FRAMEWORKS.items():
-                if keyword in words:
-                    return framework
-
-        return "Unknown"
-
     # RETURNS THE DEPENDENCIES USED IN THE REPOSITORY
     def find_dependencies(self, repo_path: Path) -> list[str]:
-        dependencies = set()
-
-        for file in self.get_files(repo_path, DEPENDENCY_FILES):
-            content = self.read_file(file)
-
-            for line in content.splitlines():
-                line = line.strip()
-
-                if not line or line.startswith("#"):
-                    continue
-
-                package = (line.split("==")[0].split(">=")[0].split("<=")[0].strip())
-                dependencies.add(package)
-        return sorted(dependencies)
+        return self.dependency_parser.parse(repo_path)
 
     # RETURNS ALL DOCUMENTATION FILES
     def get_documentation_files(self, repo_path: Path) -> list[Path]:

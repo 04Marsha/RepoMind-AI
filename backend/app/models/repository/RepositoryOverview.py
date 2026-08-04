@@ -3,7 +3,7 @@ from pydantic import BaseModel
 class RepositoryOverview(BaseModel):
     repository_name: str
     primary_language: str
-    framework: str
+    framework: list[str]
     total_files: int
     total_directories: int
     source_files: int
