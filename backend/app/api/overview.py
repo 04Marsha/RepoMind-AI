@@ -6,9 +6,17 @@ from app.discovery.project_discovery import ProjectDiscovery
 from app.core.dependencies import (get_project_discovery, project_discovery)
 from app.models.indexing.IndexRepositoryRequest import IndexRepositoryRequest
 from app.core.dependencies import repository_service
-from app.core.dependencies import get_repository_intelligence_analyzer
+from app.core.dependencies import (
+    get_repository_intelligence_analyzer, 
+    get_structure_analyzer,
+    get_metrics_analyzer,
+    get_architecture_analyzer
+    )
 from app.analyzers.repository.repository_intelligence_analyzer import RepositoryIntelligenceAnalyzer
 from app.models.repository.RepositoryIntelligence import RepositoryIntelligence
+from app.analyzers.structure.structure_analyzer import StructureAnalyzer
+from app.analyzers.metrics.metrics_analyzer import MetricsAnalyzer
+from app.analyzers.architecture.architecture_analyzer import ArchitectureAnalyzer
 
 router = APIRouter(prefix="/repositories", tags=["Repository Overview"])
 
@@ -77,3 +85,42 @@ def repository_intelligence(request: IndexRepositoryRequest, analyzer: Repositor
     overall.entry_points = sorted(set(overall.entry_points))
 
     return overall
+
+@router.post("/structure")
+def repository_structure(
+    request: IndexRepositoryRequest,
+    structure_analyzer: StructureAnalyzer = Depends(get_structure_analyzer)
+):
+    repo_path = repository_service.github_service.clone_repository(
+        request.github_url
+    )
+
+    context = project_discovery.discover(repo_path)
+
+    return structure_analyzer.analyze(context)
+
+@router.post("/metrics")
+def repository_metrics(
+    request: IndexRepositoryRequest,
+    metrics_analyzer: MetricsAnalyzer = Depends(get_metrics_analyzer)
+):
+    repo_path = repository_service.github_service.clone_repository(
+        request.github_url
+    )
+
+    context = project_discovery.discover(repo_path)
+
+    return metrics_analyzer.analyze(context)
+
+@router.post("/architecture")
+def repository_architecture(
+    request: IndexRepositoryRequest,
+    architecture_analyzer: ArchitectureAnalyzer = Depends(get_architecture_analyzer)
+):
+    repo_path = repository_service.github_service.clone_repository(
+        request.github_url
+    )
+
+    context = project_discovery.discover(repo_path)
+
+    return architecture_analyzer.analyze(context)

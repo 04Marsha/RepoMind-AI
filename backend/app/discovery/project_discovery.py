@@ -3,6 +3,18 @@ from pathlib import Path
 from app.models.repository.RepositoryContext import RepositoryContext
 from app.discovery.constants import (DISCOVERY_SCORES, STRONG_PROJECT_FILES)
 
+PROJECT_INDICATOR_FILES = {
+    "package.json",
+    "requirements.txt",
+    "pyproject.toml",
+    "pom.xml",
+    "build.gradle",
+    "go.mod",
+    "Cargo.toml",
+    "composer.json",
+    "Gemfile",
+}
+
 class ProjectDiscovery:
 
     # RETURNS THE PARENT DIRECTORY OR MAIN DIRECTORY
@@ -36,6 +48,9 @@ class ProjectDiscovery:
                 (directory / file).is_file() for file in STRONG_PROJECT_FILES)
             
             if score == 0 or not has_strong_indicator:
+                continue
+
+            if self._is_nested_project(directory, repository_path):
                 continue
 
             candidates.append(
@@ -78,3 +93,23 @@ class ProjectDiscovery:
             return 0
 
         return score
+
+    def _is_project(self, directory: Path) -> bool:
+        return any (
+            (directory / file).exists()
+            for file in PROJECT_INDICATOR_FILES
+        )
+
+    def _is_nested_project(self, directory: Path, repository_root: Path) -> bool:
+        if directory == repository_root:
+            return False
+        
+        parent = directory.parent
+
+        while parent != repository_root.parent:
+            if self._is_project(parent):
+                return True
+
+            parent = parent.parent
+
+        return False

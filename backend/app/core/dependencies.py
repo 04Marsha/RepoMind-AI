@@ -14,6 +14,9 @@ from app.analyzers.technology.technology_detector import TechnologyDetector
 from app.analyzers.repository.repository_intelligence_analyzer import RepositoryIntelligenceAnalyzer
 from app.analyzers.dependency.dependency_parser import DependencyParser
 from app.discovery.project_discovery import ProjectDiscovery
+from app.analyzers.structure.structure_analyzer import StructureAnalyzer
+from app.analyzers.metrics.metrics_analyzer import MetricsAnalyzer
+from app.analyzers.architecture.architecture_analyzer import ArchitectureAnalyzer
 
 github_service = GithubService()
 chunking_service = ChunkingService()
@@ -68,6 +71,15 @@ repository_overview_service = RepositoryAgent(
     project_discovery=project_discovery
 )
 
+structure_analyzer = StructureAnalyzer()
+metrics_analyzer = MetricsAnalyzer(
+    repository_analyzer=repository_analyzer
+)
+architecture_analyzer = ArchitectureAnalyzer(
+    technology_detector=technology_detector,
+    project_discovery=project_discovery
+)
+
 def get_repository_overview_service() -> RepositoryAgent:
     return repository_overview_service
 
@@ -76,3 +88,12 @@ def get_project_discovery() -> ProjectDiscovery:
 
 def get_repository_intelligence_analyzer():
     return repository_intelligence_analyzer
+
+def get_structure_analyzer():
+    return structure_analyzer
+
+def get_metrics_analyzer():
+    return metrics_analyzer
+
+def get_architecture_analyzer():
+    return architecture_analyzer

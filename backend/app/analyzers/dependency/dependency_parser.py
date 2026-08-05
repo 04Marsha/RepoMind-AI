@@ -10,7 +10,6 @@ class DependencyParser:
         dependencies.update(packages)
 
     def parse(self, project_root: Path) -> list[str]:
-        print(project_root)
         dependencies = set()
 
         package_json = project_root / "package.json"
@@ -63,7 +62,11 @@ class DependencyParser:
                 if not line:
                     continue
 
-                if line.startswith("#"):
+                if (line.startswith("#")
+                    or line.startswith("-e")
+                    or line.startswith("--")
+                    or line.startswith("git+")
+                ):
                     continue
 
                 package = (line
@@ -78,8 +81,8 @@ class DependencyParser:
                 if package:
                     self._add_dependencies(dependencies, [package])
 
-        except Exception:
-            pass
+        except (OSError, UnicodeDecodeError):
+            return []
 
         return sorted(dependencies)
 
@@ -151,7 +154,7 @@ class DependencyParser:
             for _, artifact in re.findall(pattern, text):
                 dependencies.add(artifact)
         except OSError:
-            pass
+            return []
         return sorted(dependencies)
 
     def parse_go_mod(self, path: Path):
