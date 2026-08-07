@@ -20,6 +20,7 @@ from app.analyzers.architecture.architecture_analyzer import ArchitectureAnalyze
 from app.analyzers.api.api_endpoint_analyzer import ApiEndpointAnalyzer
 from app.analyzers.database.database_analyzer import DatabaseAnalyzer
 from app.analyzers.repository.repository_summary_generator import RepositorySummaryGenerator
+from app.analyzers.repository.repository_health_analyzer import RepositoryHealthAnalyzer
 
 github_service = GithubService()
 chunking_service = ChunkingService()
@@ -93,6 +94,8 @@ database_analyzer = DatabaseAnalyzer(
 
 repository_summary_generator = RepositorySummaryGenerator()
 
+repository_health_analyzer = RepositoryHealthAnalyzer()
+
 def get_repository_overview_service() -> RepositoryAgent:
     return repository_overview_service
 
@@ -127,5 +130,6 @@ def get_repository_agent():
         architecture_analyzer=architecture_analyzer,
         api_endpoint_analyzer=api_endpoint_analyzer,
         database_analyzer=database_analyzer,
-        repository_summary_generator=repository_summary_generator
+        repository_summary_generator=repository_summary_generator,
+        repository_health_analyzer=repository_health_analyzer
     )

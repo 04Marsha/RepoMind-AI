@@ -11,19 +11,21 @@ from app.analyzers.database.database_analyzer import DatabaseAnalyzer
 from app.analyzers.metrics.metrics_analyzer import MetricsAnalyzer
 from app.models.agents.repository_agent_model import RepositoryAgentModel
 from app.analyzers.repository.repository_summary_generator import RepositorySummaryGenerator
+from app.analyzers.repository.repository_health_analyzer import RepositoryHealthAnalyzer
 
 class RepositoryAgent:
 
     def __init__(self, 
-        repository_analyzer: RepositoryAnalyzer, 
-        repository_intelligence_analyzer: RepositoryIntelligenceAnalyzer, 
-        project_discovery :ProjectDiscovery,
+        repository_analyzer = RepositoryAnalyzer, 
+        repository_intelligence_analyzer = RepositoryIntelligenceAnalyzer, 
+        project_discovery = ProjectDiscovery,
         structure_analyzer = StructureAnalyzer,
         metrics_analyzer = MetricsAnalyzer,
         architecture_analyzer = ArchitectureAnalyzer,
         api_endpoint_analyzer = ApiEndpointAnalyzer,
         database_analyzer = DatabaseAnalyzer,
-        repository_summary_generator = RepositorySummaryGenerator
+        repository_summary_generator = RepositorySummaryGenerator,
+        repository_health_analyzer = RepositoryHealthAnalyzer
     ):
         self.repository_analyzer = repository_analyzer
         self.repository_intelligence_analyzer = repository_intelligence_analyzer
@@ -34,6 +36,7 @@ class RepositoryAgent:
         self.api_endpoint_analyzer = api_endpoint_analyzer
         self.database_analyzer = database_analyzer
         self.repository_summary_generator = repository_summary_generator
+        self.repository_health_analyzer = repository_health_analyzer
 
     # GETS THE OVERVIEW FOR THE REPO
     def get_repository_overview(self, repo_path: Path) -> RepositoryOverview:
@@ -78,6 +81,14 @@ class RepositoryAgent:
             database
         )
 
+        health = self.repository_health_analyzer.analyze(
+            overview,
+            intelligence,
+            architecture,
+            api_analysis,
+            database
+        )
+
         return RepositoryAgentModel(
             overview=overview,
             intelligence=intelligence,
@@ -86,5 +97,6 @@ class RepositoryAgent:
             architecture=architecture,
             api_analysis=api_analysis,
             database=database,
-            summary=summary.summary
+            summary=summary.summary,
+            health=health
         )

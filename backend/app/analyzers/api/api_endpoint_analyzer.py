@@ -100,7 +100,7 @@ class ApiEndpointAnalyzer:
         )
 
         method_pattern = re.compile(
-            r'@([A-Za-z_][A-Za-z0-9_]*)\.(get|post|put|delete|patch|options|head)\(',
+            r'@([A-Za-z_][A-Za-z0-9_]*)\.(get|post|put|delete|patch|options|head)\(\s*[\'"]([^\'"]+)[\'"]',
             re.IGNORECASE
         )
 
