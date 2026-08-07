@@ -10,6 +10,7 @@ from app.analyzers.api.api_endpoint_analyzer import ApiEndpointAnalyzer
 from app.analyzers.database.database_analyzer import DatabaseAnalyzer
 from app.analyzers.metrics.metrics_analyzer import MetricsAnalyzer
 from app.models.agents.repository_agent_model import RepositoryAgentModel
+from app.analyzers.repository.repository_summary_generator import RepositorySummaryGenerator
 
 class RepositoryAgent:
 
@@ -22,6 +23,7 @@ class RepositoryAgent:
         architecture_analyzer = ArchitectureAnalyzer,
         api_endpoint_analyzer = ApiEndpointAnalyzer,
         database_analyzer = DatabaseAnalyzer,
+        repository_summary_generator = RepositorySummaryGenerator
     ):
         self.repository_analyzer = repository_analyzer
         self.repository_intelligence_analyzer = repository_intelligence_analyzer
@@ -31,6 +33,7 @@ class RepositoryAgent:
         self.architecture_analyzer = architecture_analyzer
         self.api_endpoint_analyzer = api_endpoint_analyzer
         self.database_analyzer = database_analyzer
+        self.repository_summary_generator = repository_summary_generator
 
     # GETS THE OVERVIEW FOR THE REPO
     def get_repository_overview(self, repo_path: Path) -> RepositoryOverview:
@@ -59,13 +62,29 @@ class RepositoryAgent:
     # COMBINES ALL THE INFO FROM THE ANALYZERS
     def analyze_repository(self, repo_path: Path) -> RepositoryAgentModel:
         context = self.project_discovery.discover(repo_path)
+        overview = self.get_repository_overview(repo_path)
+        intelligence = self.repository_intelligence_analyzer.analyze(context)
+        structure = self.structure_analyzer.analyze(context)
+        metrics = self.metrics_analyzer.analyze(context)
+        architecture = self.architecture_analyzer.analyze(context)
+        api_analysis = self.api_endpoint_analyzer.analyze(context)
+        database = self.database_analyzer.analyze(context)
+
+        summary = self.repository_summary_generator.generate_summary(
+            overview,
+            intelligence,
+            architecture,
+            api_analysis,
+            database
+        )
 
         return RepositoryAgentModel(
-            overview=self.get_repository_overview(repo_path),
-            intelligence=self.repository_intelligence_analyzer.analyze(context),
-            structure=self.structure_analyzer.analyze(context),
-            metrics=self.metrics_analyzer.analyze(context),
-            architecture=self.architecture_analyzer.analyze(context),
-            api_analysis=self.api_endpoint_analyzer.analyze(context),
-            database=self.database_analyzer.analyze(context)
+            overview=overview,
+            intelligence=intelligence,
+            structure=structure,
+            metrics=metrics,
+            architecture=architecture,
+            api_analysis=api_analysis,
+            database=database,
+            summary=summary.summary
         )

@@ -17,3 +17,4 @@ class RepositoryAgentModel(BaseModel):
     architecture: Architecture
     api_analysis: ApiAnalysis
     database: DatabaseAnalysis
+    summary: str

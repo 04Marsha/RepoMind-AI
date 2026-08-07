@@ -19,6 +19,7 @@ from app.analyzers.metrics.metrics_analyzer import MetricsAnalyzer
 from app.analyzers.architecture.architecture_analyzer import ArchitectureAnalyzer
 from app.analyzers.api.api_endpoint_analyzer import ApiEndpointAnalyzer
 from app.analyzers.database.database_analyzer import DatabaseAnalyzer
+from app.analyzers.repository.repository_summary_generator import RepositorySummaryGenerator
 
 github_service = GithubService()
 chunking_service = ChunkingService()
@@ -90,6 +91,8 @@ database_analyzer = DatabaseAnalyzer(
     repository_analyzer=repository_analyzer
 )
 
+repository_summary_generator = RepositorySummaryGenerator()
+
 def get_repository_overview_service() -> RepositoryAgent:
     return repository_overview_service
 
@@ -123,5 +126,6 @@ def get_repository_agent():
         metrics_analyzer=metrics_analyzer,
         architecture_analyzer=architecture_analyzer,
         api_endpoint_analyzer=api_endpoint_analyzer,
-        database_analyzer=database_analyzer
+        database_analyzer=database_analyzer,
+        repository_summary_generator=repository_summary_generator
     )
