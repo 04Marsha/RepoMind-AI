@@ -113,3 +113,15 @@ def get_api_endpoint_analyzer():
 
 def get_database_analyzer():
     return database_analyzer
+
+def get_repository_agent():
+    return RepositoryAgent(
+        repository_analyzer=repository_analyzer,
+        repository_intelligence_analyzer=repository_intelligence_analyzer,
+        project_discovery=project_discovery,
+        structure_analyzer=structure_analyzer,
+        metrics_analyzer=metrics_analyzer,
+        architecture_analyzer=architecture_analyzer,
+        api_endpoint_analyzer=api_endpoint_analyzer,
+        database_analyzer=database_analyzer
+    )
