@@ -17,6 +17,7 @@ from app.discovery.project_discovery import ProjectDiscovery
 from app.analyzers.structure.structure_analyzer import StructureAnalyzer
 from app.analyzers.metrics.metrics_analyzer import MetricsAnalyzer
 from app.analyzers.architecture.architecture_analyzer import ArchitectureAnalyzer
+from app.analyzers.api.api_endpoint_analyzer import ApiEndpointAnalyzer
 
 github_service = GithubService()
 chunking_service = ChunkingService()
@@ -80,6 +81,10 @@ architecture_analyzer = ArchitectureAnalyzer(
     project_discovery=project_discovery
 )
 
+api_endpoint_analyzer = ApiEndpointAnalyzer(
+    repository_analyzer=repository_analyzer
+)
+
 def get_repository_overview_service() -> RepositoryAgent:
     return repository_overview_service
 
@@ -97,3 +102,6 @@ def get_metrics_analyzer():
 
 def get_architecture_analyzer():
     return architecture_analyzer
+
+def get_api_endpoint_analyzer():
+    return api_endpoint_analyzer
