@@ -11,7 +11,8 @@ from app.core.dependencies import (
     get_structure_analyzer,
     get_metrics_analyzer,
     get_architecture_analyzer,
-    get_api_endpoint_analyzer
+    get_api_endpoint_analyzer,
+    get_database_analyzer
     )
 from app.analyzers.repository.repository_intelligence_analyzer import RepositoryIntelligenceAnalyzer
 from app.models.repository.RepositoryIntelligence import RepositoryIntelligence
@@ -19,6 +20,7 @@ from app.analyzers.structure.structure_analyzer import StructureAnalyzer
 from app.analyzers.metrics.metrics_analyzer import MetricsAnalyzer
 from app.analyzers.architecture.architecture_analyzer import ArchitectureAnalyzer
 from app.analyzers.api.api_endpoint_analyzer import ApiEndpointAnalyzer
+from app.analyzers.database.database_analyzer import DatabaseAnalyzer
 
 router = APIRouter(prefix="/repositories", tags=["Repository Overview"])
 
@@ -137,5 +139,18 @@ def api_analysis(
     )
 
     context = project_discovery.discover(repo)
+
+    return analyzer.analyze(context)
+
+@router.post("/database")
+def api_analysis(
+    request: IndexRepositoryRequest,
+    analyzer: DatabaseAnalyzer = Depends(get_database_analyzer),
+):
+    repo_path = repository_service.github_service.clone_repository(
+        request.github_url
+    )
+
+    context = project_discovery.discover(repo_path)
 
     return analyzer.analyze(context)
