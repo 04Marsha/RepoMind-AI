@@ -122,5 +122,35 @@ TECHNOLOGIES = [
         name="Multer",
         category="file_upload",
         dependency_names=["multer"]
+    ),
+
+    Technology(
+        name="Django",
+        category="backend_framework",
+        dependency_names=["django"],
+        import_patterns=["django"]
+    ),
+
+    Technology(
+        name="FastAPI",
+        category="backend_framework",
+        dependency_names=["fastapi"],
+        import_patterns=["fastapi"]
+    ),
+
+    Technology(
+        name="Flask",
+        category="backend_framework",
+        dependency_names=["flask"],
+        import_patterns=[
+            "from flask import",
+            "import flask"
+        ]
+    ),
+
+    Technology(
+        name="Express",
+        category="backend_framework",
+        dependency_names=["express"]
     )
 ]

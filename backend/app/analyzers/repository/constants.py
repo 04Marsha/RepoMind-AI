@@ -144,3 +144,13 @@ DEPENDENCY_FILES = {
     "go.mod",
     "Cargo.toml",
 }
+
+NON_PRIMARY = {
+    "HTML",
+    "CSS",
+    "SCSS",
+    "JSON",
+    "YAML",
+    "XML",
+    "Markdown"
+}

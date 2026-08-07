@@ -8,7 +8,6 @@ from app.analyzers.structure.structure_analyzer import StructureAnalyzer
 from app.analyzers.architecture.architecture_analyzer import ArchitectureAnalyzer
 from app.analyzers.api.api_endpoint_analyzer import ApiEndpointAnalyzer
 from app.analyzers.database.database_analyzer import DatabaseAnalyzer
-from app.models.repository.RepositoryAnalysis import RepositoryAnalysis
 from app.analyzers.metrics.metrics_analyzer import MetricsAnalyzer
 from app.models.agents.repository_agent_model import RepositoryAgentModel
 
@@ -42,7 +41,7 @@ class RepositoryAgent:
 
         return RepositoryOverview(
             repository_name=metadata.repository_name,
-            primary_language=metadata.primary_language,
+            primary_language=intelligence.primary_language,
             languages=metadata.languages,
             framework=(intelligence.backend_frameworks + intelligence.frontend_frameworks),
             total_files=self.repository_analyzer.count_files(context.project_root),

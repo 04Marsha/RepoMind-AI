@@ -11,6 +11,7 @@ class ArchitectureAnalyzer:
     def analyze(self, context: RepositoryContext) -> Architecture:
         architecture = Architecture()
         project_technologies = self.technology_detector.detect(context)
+        architecture.layers = self.detect_layers(context)
 
 
         # ------- checks if the project is frontend, backend or both -------
@@ -48,55 +49,28 @@ class ArchitectureAnalyzer:
         architecture.monorepo = len(projects) > 1
         architecture.microservices = backend_projects > 1
 
-
         # ------- determines the type of architecture of the project -------
-        if self.has_directories(
-            context, 
-            ("controller", "controllers"), 
-            ("service", "services"), 
-            ("repository", "repositories"), 
-            ("model", "models")
-        ):
+        layers = set(architecture.layers)
+        if {
+            "Controller",
+            "Service",
+            "Repository",
+            "Model"
+        }.issubset(layers):
             architecture.style = "Layered"
-        elif self.has_directories(
-            context, 
-            ("controller", "controllers"), 
-            ("model", "models"), 
-            ("view", "views")
-        ):
+        elif {
+            "Controller",
+            "Model"
+        }.issubset(layers):
             architecture.style = "MVC"
-        elif self.has_directories(
-            context, 
-            ("domain", "domains"), 
-            ("application", "applications"), 
-            ("infrastructure", "infrastructures")
-        ):
+        elif {
+            "Domain",
+            "Application",
+            "Infrastructure"
+        }.issubset(layers):
             architecture.style = "Clean Architecture"
         else:
             architecture.style = "Unknown"
-
-
-        # ------- determines the layers of specific architecture of the project -------
-        if architecture.style == "Layered":
-            architecture.layers = [
-                "Controllers", 
-                "Services", 
-                "Repositories", 
-                "Models",
-            ]
-        elif architecture.style == "MVC":
-            architecture.layers = [
-                "Models",
-                "Views", 
-                "Controllers",
-            ]
-        elif architecture.style == "Clean Architecture":
-            architecture.layers = [
-                "Domain", 
-                "Application", 
-                "Infrastructure",
-                "Presentation"
-            ]
 
         #  ------- determines confidence score -------
         score = sum([
@@ -121,3 +95,32 @@ class ArchitectureAnalyzer:
             any(option in existing for option in group)
             for group in groups
         )
+
+    # DETERMINES THE LAYERS IN THE ARCHITECTURE
+    def detect_layers(self, context):
+        existing = {
+            folder.name.lower()
+            for folder in context.project_root.rglob("*")
+            if folder.is_dir()
+        }
+
+        layer_mapping = {
+            "Controller": {"controller", "controllers"},
+            "Service": {"service", "services"},
+            "Repository": {"repository", "repositories", "dao"},
+            "Model": {"model", "models", "entity", "entities"},
+            "Route": {"route", "routes"},
+            "Middleware": {"middleware", "middlewares"},
+            "View": {"view", "views"},
+            "Domain": {"domain", "domains"},
+            "Application": {"application", "applications"},
+            "Infrastructure": {"infrastructure", "infrastructures"},
+            "Presentation": {"presentation"},
+        }
+
+        layers = []
+
+        for layer, names in layer_mapping.items():
+            if any(name in existing for name in names):
+                layers.append(layer)
+        return layers

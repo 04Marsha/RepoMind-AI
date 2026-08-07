@@ -8,13 +8,17 @@ class Technology(BaseModel):
     import_patterns: list[str] = Field(default_factory=list)
 
     def matches(self, dependencies, config_files, imports):
-        if any(keyword in dependencies for keyword in self.dependency_names):
+        dependencies = {d.lower() for d in dependencies}
+        config_files = {f.lower() for f in config_files}
+        imports = {i.lower() for i in imports}
+
+        if any(keyword.lower() in dependencies for keyword in self.dependency_names):
             return True
 
-        if any(file in config_files for file in self.config_files): 
+        if any(file.lower() in config_files for file in self.config_files): 
             return True
 
-        if any(module == pattern or module.startswith(pattern + ".")
+        if any(module == pattern.lower() or module.startswith(pattern.lower() + ".")
                for module in imports
                for pattern in self.import_patterns
             ):

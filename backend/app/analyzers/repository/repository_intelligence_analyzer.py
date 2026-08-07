@@ -2,7 +2,7 @@ from pathlib import Path
 
 from app.models.repository.RepositoryContext import RepositoryContext
 from app.models.repository.RepositoryIntelligence import RepositoryIntelligence
-from app.analyzers.repository.constants import ENTRY_POINT_FILES
+from app.analyzers.repository.constants import ENTRY_POINT_FILES, NON_PRIMARY
 from app.analyzers.repository.repository_analyzer import RepositoryAnalyzer
 from app.analyzers.technology.technology_detector import TechnologyDetector
 
@@ -16,7 +16,7 @@ class RepositoryIntelligenceAnalyzer:
         intelligence = RepositoryIntelligence()
         languages = self.repository_analyzer.detect_languages(context.project_root)
         intelligence.languages = languages
-        intelligence.primary_language = (languages[0] if languages else "Unknown")
+        intelligence.primary_language = self.determine_primary_language(intelligence.languages)
 
         technologies = self.technology_detector.detect(context)
 
@@ -66,3 +66,10 @@ class RepositoryIntelligenceAnalyzer:
                 return manager
 
         return None
+
+    def determine_primary_language(self, languages: list[str]):
+
+        for language in languages:
+            if language not in NON_PRIMARY:
+                return language
+        return languages[0] if languages else "Unknown"
