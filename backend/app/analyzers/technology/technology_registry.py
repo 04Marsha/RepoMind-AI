@@ -152,5 +152,29 @@ TECHNOLOGIES = [
         name="Express",
         category="backend_framework",
         dependency_names=["express"]
+    ),
+
+    Technology(
+        name="Scikit Learn",
+        category="machine_learning",
+        dependency_names=["scikit-learn", "sklearn"]
+    ),
+
+    Technology(
+        name="TensorFlow",
+        category="machine_learning",
+        dependency_names=["tensorflow"]
+    ),
+
+    Technology(
+        name="PyTorch",
+        category="machine_learning",
+        dependency_names=["torch"]
+    ),
+
+    Technology(
+        name="SHAP",
+        category="machine_learning",
+        dependency_names=["shap"]
     )
 ]

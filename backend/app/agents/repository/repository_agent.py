@@ -12,6 +12,7 @@ from app.analyzers.metrics.metrics_analyzer import MetricsAnalyzer
 from app.models.agents.repository_agent_model import RepositoryAgentModel
 from app.analyzers.repository.repository_summary_generator import RepositorySummaryGenerator
 from app.analyzers.repository.repository_health_analyzer import RepositoryHealthAnalyzer
+from app.analyzers.metrics.complexity_analyzer import ComplexityAnalyzer
 
 class RepositoryAgent:
 
@@ -25,7 +26,8 @@ class RepositoryAgent:
         api_endpoint_analyzer = ApiEndpointAnalyzer,
         database_analyzer = DatabaseAnalyzer,
         repository_summary_generator = RepositorySummaryGenerator,
-        repository_health_analyzer = RepositoryHealthAnalyzer
+        repository_health_analyzer = RepositoryHealthAnalyzer,
+        complexity_analyzer = ComplexityAnalyzer
     ):
         self.repository_analyzer = repository_analyzer
         self.repository_intelligence_analyzer = repository_intelligence_analyzer
@@ -37,6 +39,7 @@ class RepositoryAgent:
         self.database_analyzer = database_analyzer
         self.repository_summary_generator = repository_summary_generator
         self.repository_health_analyzer = repository_health_analyzer
+        self.complexity_analyzer = complexity_analyzer
 
     # GETS THE OVERVIEW FOR THE REPO
     def get_repository_overview(self, repo_path: Path) -> RepositoryOverview:
@@ -89,6 +92,15 @@ class RepositoryAgent:
             database
         )
 
+        complexity = self.complexity_analyzer.analyze(
+            context,
+            intelligence, 
+            architecture, 
+            api_analysis, 
+            database, 
+            metrics
+        )
+
         return RepositoryAgentModel(
             overview=overview,
             intelligence=intelligence,
@@ -98,5 +110,6 @@ class RepositoryAgent:
             api_analysis=api_analysis,
             database=database,
             summary=summary.summary,
-            health=health
+            health=health,
+            complexity=complexity
         )
