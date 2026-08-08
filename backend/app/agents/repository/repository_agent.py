@@ -14,6 +14,7 @@ from app.analyzers.repository.repository_summary_generator import RepositorySumm
 from app.analyzers.repository.repository_health_analyzer import RepositoryHealthAnalyzer
 from app.analyzers.metrics.complexity_analyzer import ComplexityAnalyzer
 from app.analyzers.repository.insights_analyzer import InsightsAnalyzer
+from app.models.repository.RepositorySecurity import RepositorySecurity
 
 class RepositoryAgent:
 
@@ -29,7 +30,8 @@ class RepositoryAgent:
         repository_summary_generator = RepositorySummaryGenerator,
         repository_health_analyzer = RepositoryHealthAnalyzer,
         complexity_analyzer = ComplexityAnalyzer,
-        insights_analyzer = InsightsAnalyzer
+        insights_analyzer = InsightsAnalyzer,
+        security_analyzer = RepositorySecurity
     ):
         self.repository_analyzer = repository_analyzer
         self.repository_intelligence_analyzer = repository_intelligence_analyzer
@@ -43,6 +45,7 @@ class RepositoryAgent:
         self.repository_health_analyzer = repository_health_analyzer
         self.complexity_analyzer = complexity_analyzer
         self.insights_analyzer = insights_analyzer
+        self.security_analyzer = security_analyzer
 
     # GETS THE OVERVIEW FOR THE REPO
     def get_repository_overview(self, repo_path: Path) -> RepositoryOverview:
@@ -104,7 +107,17 @@ class RepositoryAgent:
             metrics
         )
 
-        insights = self.insights_analyzer.analyze(context)
+        insights = self.insights_analyzer.analyze(
+            overview,
+            architecture,
+            api_analysis,
+            database
+        )
+
+        security = self.security_analyzer.analyze(
+            overview,
+            context
+        )
 
         return RepositoryAgentModel(
             overview=overview,
@@ -117,5 +130,6 @@ class RepositoryAgent:
             summary=summary.summary,
             health=health,
             complexity=complexity,
-            insights=insights
+            insights=insights,
+            security=security
         )
