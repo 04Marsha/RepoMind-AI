@@ -9,6 +9,7 @@ from app.models.api.ApiAnalysis import ApiAnalysis
 from app.models.database.DatabaseAnalysis import DatabaseAnalysis
 from app.models.repository.RepositoryHealth import RepositoryHealth
 from app.models.metrics.Complexity import Complexity
+from app.models.repository.RepositoryInsights import RepositoryInsights
 
 class RepositoryAgentModel(BaseModel):
     overview: RepositoryOverview
@@ -21,3 +22,4 @@ class RepositoryAgentModel(BaseModel):
     summary: str
     health: RepositoryHealth
     complexity: Complexity
+    insights: RepositoryInsights

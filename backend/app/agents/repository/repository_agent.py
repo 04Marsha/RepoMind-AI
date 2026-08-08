@@ -13,6 +13,7 @@ from app.models.agents.repository_agent_model import RepositoryAgentModel
 from app.analyzers.repository.repository_summary_generator import RepositorySummaryGenerator
 from app.analyzers.repository.repository_health_analyzer import RepositoryHealthAnalyzer
 from app.analyzers.metrics.complexity_analyzer import ComplexityAnalyzer
+from app.analyzers.repository.insights_analyzer import InsightsAnalyzer
 
 class RepositoryAgent:
 
@@ -27,7 +28,8 @@ class RepositoryAgent:
         database_analyzer = DatabaseAnalyzer,
         repository_summary_generator = RepositorySummaryGenerator,
         repository_health_analyzer = RepositoryHealthAnalyzer,
-        complexity_analyzer = ComplexityAnalyzer
+        complexity_analyzer = ComplexityAnalyzer,
+        insights_analyzer = InsightsAnalyzer
     ):
         self.repository_analyzer = repository_analyzer
         self.repository_intelligence_analyzer = repository_intelligence_analyzer
@@ -40,6 +42,7 @@ class RepositoryAgent:
         self.repository_summary_generator = repository_summary_generator
         self.repository_health_analyzer = repository_health_analyzer
         self.complexity_analyzer = complexity_analyzer
+        self.insights_analyzer = insights_analyzer
 
     # GETS THE OVERVIEW FOR THE REPO
     def get_repository_overview(self, repo_path: Path) -> RepositoryOverview:
@@ -101,6 +104,8 @@ class RepositoryAgent:
             metrics
         )
 
+        insights = self.insights_analyzer.analyze(context)
+
         return RepositoryAgentModel(
             overview=overview,
             intelligence=intelligence,
@@ -111,5 +116,6 @@ class RepositoryAgent:
             database=database,
             summary=summary.summary,
             health=health,
-            complexity=complexity
+            complexity=complexity,
+            insights=insights
         )
