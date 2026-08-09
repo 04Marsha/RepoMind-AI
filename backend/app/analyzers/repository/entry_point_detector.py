@@ -51,28 +51,28 @@ class EntryPointDetector:
         indicators = [
             '__name__ == "__main__"',
             "uvicorn.run(",
-            "app.run(",
         ]
 
-        for file in context.project_root.rglob("*.py"):
+        for file in context.repository_root.rglob("*.py"):
             if file.name not in candidates:
                 continue
 
-            if self._contains_indicator(file, indicators):
-                entry_points.append(str(file.relative_to(context.project_root)))
+            if self._is_ignored(file):
+                continue
+
+            if self._contains_indicator(file, indicators, match_all=False):
+                entry_points.append(str(file.relative_to(context.repository_root)))
         return entry_points
 
     # DETECTS ENTRY POINT FOR NODE
     def _detect_node(self, context: RepositoryContext) -> list[str]:
         candidates = {
-            "index.js",
-            "index.ts",
             "server.js",
             "server.ts",
             "app.js",
-            "app.ts",
             "main.js",
-            "main.ts",
+            "index.js",
+            "index.ts",
         }
 
         indicators = [
@@ -83,70 +83,72 @@ class EntryPointDetector:
             "koa(",
             "hono(",
             "nestfactory.create(",
+            "bootstrap("
         ]
 
         entry_points = []
 
-        for file in context.project_root.rglob("*"):
+        for file in context.repository_root.rglob("*"):
             if file.suffix not in {".js", ".ts"}:
                 continue
 
             if file.name not in candidates:
                 continue
+
+            if self._is_ignored(file):
+                continue
             
             if self._contains_indicator(file, indicators):
-                entry_points.append(str(file.relative_to(context.project_root)))
+                entry_points.append(str(file.relative_to(context.repository_root)))
 
         return entry_points
 
     # DETECTS ENTRY POINT FOR REACT
     def _detect_react(self, context: RepositoryContext) -> list[str]:
         candidates = [
-            "src/main.tsx",
-            "src/index.tsx",
-            "src/main.jsx",
-            "src/index.jsx",
+            "main.tsx",
+            "index.tsx",
+            "main.jsx",
+            "index.jsx",
         ]
 
         indicators = [
             "createroot(",
+            "from 'react-dom/client'",
             "reactdom.render(",
-            "<app",
-            "<routerprovider",
+            "strictmode",
         ]
 
         entry_points = []
-        for candidate in candidates:
-            file = context.project_root / candidate
+        for file in context.repository_root.rglob("*"):
+            if file.name not in candidates:
+                continue
 
-            if not file.exists():
+            if self._is_ignored(file):
                 continue
 
             if self._contains_indicator(file, indicators):
-                entry_points.append(candidate)
+                entry_points.append(str(file.relative_to(context.repository_root)))
         return entry_points
+
 
     # DETECTS ENTRY POINT FOR ANGULAR
     def _detect_angular(self, context: RepositoryContext) -> list[str]:
-        candidates = [
-            "src/main.ts",
-        ]
-
         indicators = [
             "bootstrapapplication(",
             "bootstrapmodule(",
             "platformbrowserdynamic(",
+            "import('./bootstrap')",
+            'import("./bootstrap")',
         ]
         entry_points = []
 
-        for candidate in candidates:
-            file = context.project_root / candidate
-
-            if not file.exists():
+        for file in context.repository_root.rglob("main.ts"):
+            if self._is_ignored(file):
                 continue
 
             if self._contains_indicator(file, indicators):
-                entry_points.append(candidate)
+                entry_points.append(str(file.relative_to(context.repository_root)))
 
         return entry_points
 
@@ -160,9 +162,12 @@ class EntryPointDetector:
             "public static void main",
         ]
 
-        for file in context.project_root.rglob("*.java"):
+        for file in context.repository_root.rglob("*.java"):
+            if self._is_ignored(file):
+                continue
+
             if self._contains_indicator(file, indicators, match_all=True):
-                    entry_points.append(str(file.relative_to(context.project_root)))
+                    entry_points.append(str(file.relative_to(context.repository_root)))
         return entry_points
 
     # DETECTS ENTRY POINT FOR GO
@@ -174,10 +179,12 @@ class EntryPointDetector:
             "func main(",
         ]
 
-        for file in context.project_root.rglob("*.go"):
+        for file in context.repository_root.rglob("*.go"):
+            if self._is_ignored(file):
+                continue
 
-            if self._contains_indicator(file, indicators):
-                entry_points.append(str(file.relative_to(context.project_root)))
+            if self._contains_indicator(file, indicators, match_all=True):
+                entry_points.append(str(file.relative_to(context.repository_root)))
         return entry_points
 
     # DETECTS ENTRY POINT FOR RUST
@@ -188,7 +195,26 @@ class EntryPointDetector:
             "fn main(",
         ]
 
-        for file in context.project_root.rglob("*.rs"):
+        for file in context.repository_root.rglob("*.rs"):
+            if self._is_ignored(file):
+                continue
+
             if self._contains_indicator(file, indicators):
-                entry_points.append(str(file.relative_to(context.project_root)))
+                entry_points.append(str(file.relative_to(context.repository_root)))
         return entry_points
+
+    # IGNORES THE UNWANTED FILES / DIRECTORIES
+    def _is_ignored(self, path: Path) -> bool:
+        ignored = {
+            "node_modules",
+            ".git",
+            "dist",
+            "build",
+            "coverage",
+            ".angular",
+            ".next",
+            "target",
+            "__pycache__"
+        }
+    
+        return any(part in ignored for part in path.parts)

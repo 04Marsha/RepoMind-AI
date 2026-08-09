@@ -22,11 +22,11 @@ class MetricsAnalyzer:
         comment_lines = 0
         code_lines = 0
 
-        metrics.total_files = self.repository_analyzer.count_files(context.project_root)
-        metrics.source_files = self.repository_analyzer.count_source_files(context.project_root)
-        metrics.total_directories = self.repository_analyzer.count_directories(context.project_root)
+        metrics.total_files = self.repository_analyzer.count_files(context.repository_root)
+        metrics.source_files = self.repository_analyzer.count_source_files(context.repository_root)
+        metrics.total_directories = self.repository_analyzer.count_directories(context.repository_root)
 
-        for file in self.repository_analyzer.get_source_files(context.project_root):
+        for file in self.repository_analyzer.get_source_files(context.repository_root):
             text = self.repository_analyzer.read_file(file)
 
             if not text:

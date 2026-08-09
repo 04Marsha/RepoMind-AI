@@ -51,15 +51,15 @@ class RepositoryAnalyzer:
 
     # RETURNS THE INFORMATION ABOUT THE REPO
     def analyze(self, context: RepositoryContext) -> RepositoryMetadata:
-        languages = self.detect_languages(context.project_root)
+        languages = self.detect_languages(context.repository_root)
         return RepositoryMetadata(
             repository_name=context.repository_name,
-            primary_language=languages[0],
+            primary_language=languages[0] if languages else "Unknown",
             languages=languages,
-            has_readme=self.detect_readme(context.project_root),
-            has_license=self.detect_license(context.project_root),
-            dockerized=self.detect_docker(context.project_root),
-            has_tests=self.detect_tests(context.project_root),
+            has_readme=self.detect_readme(context.repository_root),
+            has_license=self.detect_license(context.repository_root),
+            dockerized=self.detect_docker(context.repository_root),
+            has_tests=self.detect_tests(context.repository_root),
         )
 
     # CHECKS IF THE FILE EXISTS
@@ -72,15 +72,27 @@ class RepositoryAnalyzer:
 
     # CHECKS IF A README FILE EXISTS
     def detect_readme(self, repo_path: Path) -> bool:
-        return self.file_exists(repo_path, "README.md")
+        return any (
+            file.name.lower() == "readme.md"
+            for file in repo_path.iterdir()
+            if file.is_file()
+        )
 
     # CHECKS IF LICENSE EXISTS
     def detect_license(self, repo_path: Path) -> bool:
-        return self.file_exists(repo_path, "LICENSE")
+        return any (
+            file.name.lower() == "license"
+            for file in repo_path.iterdir()
+            if file.is_file()
+        )
 
     # CHECKS IN DOCKER FILE EXISTS
     def detect_docker(self, repo_path: Path) -> bool:
-        return self.file_exists(repo_path, "Dockerfile")
+        return any(
+            file.name.startswith("Dockerfile")
+            for file in repo_path.iterdir()
+            if file.is_file()
+        )
 
     # CHECKS IF TEST OR TESTS FOLDER EXISTS
     def detect_tests(self, repo_path: Path) -> bool:

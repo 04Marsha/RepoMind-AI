@@ -59,16 +59,16 @@ class RepositoryAgent:
             primary_language=intelligence.primary_language,
             languages=metadata.languages,
             framework=(intelligence.backend_frameworks + intelligence.frontend_frameworks),
-            total_files=self.repository_analyzer.count_files(context.project_root),
+            total_files=self.repository_analyzer.count_files(context.repository_root),
             total_directories=self.repository_analyzer.count_directories(repo_path),
             source_files=self.repository_analyzer.count_source_files(repo_path),
             documentation_files=self.repository_analyzer.count_documentation_files(repo_path),
-            configuration_files=self.repository_analyzer.count_configuration_files(context.project_root),
+            configuration_files=self.repository_analyzer.count_configuration_files(context.repository_root),
             has_readme=metadata.has_readme,
             has_license=metadata.has_license,
             has_tests=metadata.has_tests,
             dockerized=metadata.dockerized,
-            dependencies=self.repository_analyzer.find_dependencies(context.project_root)
+            dependencies=self.repository_analyzer.find_dependencies(context.repository_root)
         )
 
     # COMBINES ALL THE INFO FROM THE ANALYZERS
@@ -78,7 +78,7 @@ class RepositoryAgent:
         intelligence = self.repository_intelligence_analyzer.analyze(context)
         structure = self.structure_analyzer.analyze(context)
         metrics = self.metrics_analyzer.analyze(context)
-        architecture = self.architecture_analyzer.analyze(context)
+        architecture = self.architecture_analyzer.analyze(context, overview)
         api_analysis = self.api_endpoint_analyzer.analyze(context)
         database = self.database_analyzer.analyze(context)
 

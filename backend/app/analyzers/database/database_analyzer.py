@@ -42,7 +42,7 @@ class DatabaseAnalyzer:
 
         pattern = re.compile(r'CREATE\s+TABLE\s+([A-Za-z_][A-Za-z0-9_]*)', re.IGNORECASE)
 
-        for file in self.repository_analyzer.get_source_files(context.project_root):
+        for file in self.repository_analyzer.get_source_files(context.repository_root):
             if file.suffix != ".sql":
                 continue
 
@@ -53,7 +53,7 @@ class DatabaseAnalyzer:
                     DatabaseEntity(
                         name=match.group(1),
                         type="SQL Table",
-                        file=str(file.relative_to(context.project_root))
+                        file=str(file.relative_to(context.repository_root))
                     )
                 )
         return entities
@@ -64,7 +64,7 @@ class DatabaseAnalyzer:
     
         pattern = re.compile(r'class\s+([A-Za-z_][A-Za-z0-9_]*)\s*\([^)]*Base[^)]*\)')
     
-        for file in self.repository_analyzer.get_source_files(context.project_root):
+        for file in self.repository_analyzer.get_source_files(context.repository_root):
             if file.suffix != ".py":
                 continue
     
@@ -75,7 +75,7 @@ class DatabaseAnalyzer:
                     DatabaseEntity(
                         name=match.group(1),
                         type="SQLAlchemy Model",
-                        file=str(file.relative_to(context.project_root))
+                        file=str(file.relative_to(context.repository_root))
                     )
                 )
         return entities
@@ -86,7 +86,7 @@ class DatabaseAnalyzer:
         
         pattern = re.compile(r'mongoose\.model\(\s*[\'"]([^\'"]+)[\'"]')
         
-        for file in self.repository_analyzer.get_source_files(context.project_root):
+        for file in self.repository_analyzer.get_source_files(context.repository_root):
             if file.suffix not in {".js", ".ts"}:
                 continue
         
@@ -97,7 +97,7 @@ class DatabaseAnalyzer:
                     DatabaseEntity(
                         name=match.group(1),
                         type="Mongoose Model",
-                        file=str(file.relative_to(context.project_root))
+                        file=str(file.relative_to(context.repository_root))
                     )
                 )
         return entities
@@ -108,7 +108,7 @@ class DatabaseAnalyzer:
             
         pattern = re.compile(r'@Entity.*?class\s+([A-Za-z_][A-Za-z0-9_]*)', re.DOTALL)
             
-        for file in self.repository_analyzer.get_source_files(context.project_root):
+        for file in self.repository_analyzer.get_source_files(context.repository_root):
             if file.suffix != ".java":
                 continue
             
@@ -119,7 +119,7 @@ class DatabaseAnalyzer:
                     DatabaseEntity(
                         name=match.group(1),
                         type="JPA Entity",
-                        file=str(file.relative_to(context.project_root))
+                        file=str(file.relative_to(context.repository_root))
                     )
                 )
         return entities

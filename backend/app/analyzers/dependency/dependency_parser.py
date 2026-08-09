@@ -9,31 +9,73 @@ class DependencyParser:
     def _add_dependencies(self, dependencies: set[str], packages: Iterable[str]):
         dependencies.update(packages)
 
-    def parse(self, project_root: Path) -> list[str]:
+    def parse(self, repository_root: Path) -> list[str]:
         dependencies = set()
 
-        package_json = project_root / "package.json"
-        requirements = project_root / "requirements.txt"
-        pyproject = project_root / "pyproject.toml"
-        pom = project_root / "pom.xml"
-        gradle = project_root / "build.gradle"
-        cargo = project_root / "Cargo.toml"
-        go_mod = project_root / "go.mod"
+        for package_json in repository_root.rglob("package.json"):
+            self._add_dependencies(
+                dependencies,
+                self.parse_package_json(package_json)
+            )
 
-        if package_json.exists():
-            self._add_dependencies(dependencies, self.parse_package_json(package_json))
-        if requirements.exists():
-            self._add_dependencies(dependencies, self.parse_requirements(requirements))
-        if pyproject.exists():
-            self._add_dependencies(dependencies, self.parse_pyproject(pyproject))
-        if pom.exists():
-            self._add_dependencies(dependencies, self.parse_pom(pom))
-        if gradle.exists():
-            self._add_dependencies(dependencies, self.parse_gradle(gradle))
-        if cargo.exists():
-            self._add_dependencies(dependencies, self.parse_cargo(cargo))
-        if go_mod.exists():
-            self._add_dependencies(dependencies, self.parse_go_mod(go_mod))
+        for requirements in repository_root.rglob("requirements.txt"):
+            self._add_dependencies(
+                dependencies,
+                self.parse_requirements(requirements)
+            )
+
+        for pyproject in repository_root.rglob("pyproject.toml"):
+            self._add_dependencies(
+                dependencies,
+                self.parse_pyproject(pyproject)
+            )
+
+        for pyproject in repository_root.rglob("pom.xml"):
+            self._add_dependencies(
+                dependencies,
+                self.parse_pom(pyproject)
+            )
+
+        for pyproject in repository_root.rglob("build.gradle"):
+            self._add_dependencies(
+                dependencies,
+                self.parse_gradle(pyproject)
+            )
+
+        for pyproject in repository_root.rglob("Cargo.toml"):
+            self._add_dependencies(
+                dependencies,
+                self.parse_cargo(pyproject)
+            )
+
+        for pyproject in repository_root.rglob("go.mod"):
+            self._add_dependencies(
+                dependencies,
+                self.parse_go_mod(pyproject)
+            )
+
+        # package_json = project_root / "package.json"
+        # requirements = project_root / "requirements.txt"
+        # pyproject = project_root / "pyproject.toml"
+        # pom = project_root / "pom.xml"
+        # gradle = project_root / "build.gradle"
+        # cargo = project_root / "Cargo.toml"
+        # go_mod = project_root / "go.mod"
+
+        # if package_json.exists():
+        #     self._add_dependencies(dependencies, self.parse_package_json(package_json))
+        # if requirements.exists():
+        #     self._add_dependencies(dependencies, self.parse_requirements(requirements))
+        # if pyproject.exists():
+        #     self._add_dependencies(dependencies, self.parse_pyproject(pyproject))
+        # if pom.exists():
+        #     self._add_dependencies(dependencies, self.parse_pom(pom))
+        # if gradle.exists():
+        #     self._add_dependencies(dependencies, self.parse_gradle(gradle))
+        # if cargo.exists():
+        #     self._add_dependencies(dependencies, self.parse_cargo(cargo))
+        # if go_mod.exists():
+        #     self._add_dependencies(dependencies, self.parse_go_mod(go_mod))
 
         return sorted(dependencies)
 

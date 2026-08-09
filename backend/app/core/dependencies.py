@@ -24,6 +24,7 @@ from app.analyzers.repository.repository_health_analyzer import RepositoryHealth
 from app.analyzers.metrics.complexity_analyzer import ComplexityAnalyzer
 from app.analyzers.repository.insights_analyzer import InsightsAnalyzer
 from app.analyzers.repository.security_analyzer import SecurityAnalyzer
+from app.analyzers.repository.entry_point_detector import EntryPointDetector
 
 github_service = GithubService()
 chunking_service = ChunkingService()
@@ -31,6 +32,7 @@ embedding_service = EmbeddingService()
 vector_store = VectorStore()
 project_discovery = ProjectDiscovery()
 dependency_parser = DependencyParser()
+entry_point_detector = EntryPointDetector()
 
 repository_analyzer = RepositoryAnalyzer(
     dependency_parser=dependency_parser
@@ -57,7 +59,8 @@ technology_detector = TechnologyDetector(
 
 repository_intelligence_analyzer = RepositoryIntelligenceAnalyzer(
     repository_analyzer,
-    technology_detector
+    technology_detector,
+    entry_point_detector
 )
 
 retriever = Retriever(

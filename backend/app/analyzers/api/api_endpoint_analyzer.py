@@ -29,11 +29,15 @@ class ApiEndpointAnalyzer:
             self.detect_spring_boot(context)
         )
 
+        analysis.endpoints = self.deduplicate_endpoints(
+            analysis.endpoints
+        )
+
         return analysis
 
     def get_source_files(self, context: RepositoryContext, *extensions: str): 
         return [
-            file for file in self.repository_analyzer.get_source_files(context.project_root)
+            file for file in self.repository_analyzer.get_source_files(context.repository_root)
             if file.suffix in extensions
         ]
 
@@ -64,7 +68,10 @@ class ApiEndpointAnalyzer:
 
     def detect_fastapi(self, context):
         endpoints = []
-        pattern = re.compile(r'@([A-Za-z_][A-Za-z0-9_]*)\.(get|post|put|delete|patch|options|head)\(\s*[\'"]([^\'"]+)[\'"]')
+        pattern = re.compile(
+            r'@([A-Za-z_][A-Za-z0-9_]*)\.(get|post|put|delete|patch|options|head)\(\s*[\'"]([^\'"]+)[\'"]',
+            re.DOTALL
+        )
 
         for file in self.get_source_files(context, ".py"):
             text = file.read_text(encoding="utf-8", errors="ignore")
@@ -86,7 +93,7 @@ class ApiEndpointAnalyzer:
                         method=method,
                         path=full_path,
                         handler=handler,
-                        file=str(file.relative_to(context.project_root))
+                        file=str(file.relative_to(context.repository_root))
                     )
                 )
         return endpoints
@@ -99,13 +106,11 @@ class ApiEndpointAnalyzer:
             re.DOTALL
         )
 
-        method_pattern = re.compile(
-            r'@([A-Za-z_][A-Za-z0-9_]*)\.(get|post|put|delete|patch|options|head)\(\s*[\'"]([^\'"]+)[\'"]',
-            re.IGNORECASE
-        )
-
         for file in self.get_source_files(context, ".py"):
             text = file.read_text(encoding="utf-8", errors="ignore")
+
+            if "from flask" not in text.lower() and "import flask" not in text.lower():
+                continue
 
             for match in route_pattern.finditer(text):
                 router_name = match.group(1)
@@ -124,8 +129,6 @@ class ApiEndpointAnalyzer:
                         r'[\'"]([A-Za-z]+)[\'"]',
                         method_match.group(1)
                     )
-                else:
-                    methods = ["GET"]
 
                 handler = self.find_handler(text, match.end())
 
@@ -137,28 +140,9 @@ class ApiEndpointAnalyzer:
                             method=method.upper(),
                             path=path,
                             handler=handler,
-                            file=str(file.relative_to(context.project_root))
+                            file=str(file.relative_to(context.repository_root))
                         )
                     )
-                
-
-            for match in method_pattern.finditer(text):
-                router_name = match.group(1)
-                method = match.group(2).upper()
-                path = match.group(3)
-                handler = self.find_handler(text, match.end())
-
-                endpoints.append(
-                    ApiEndpoint(
-                        framework="Flask",
-                        router=router_name,
-                        method=method,
-                        path=path,
-                        handler=handler,
-                        file=str(file.relative_to(context.project_root))
-                    )
-                )
-
         return endpoints
 
     def find_express_handler(self, text: str, start: int):
@@ -168,6 +152,22 @@ class ApiEndpointAnalyzer:
             return match.group(1)
         return "Anonymous"
 
+    def find_express_prefixes(self, text: str):
+        prefixes = {}
+
+        pattern = re.compile(
+            r'app\.use\(\s*[\'"]([^\'"]+)[\'"]\s*,\s*([A-Za-z_][A-Za-z0-9_]*)',
+            re.IGNORECASE
+        )
+    
+        for match in pattern.finditer(text):
+            prefix = match.group(1)
+            router_var = match.group(2)
+    
+            prefixes[router_var] = prefix
+
+        return prefixes
+
     def detect_express(self, context):
         endpoints = []
 
@@ -175,6 +175,15 @@ class ApiEndpointAnalyzer:
             r'\b(router|app)\.(get|post|put|delete|patch)\(\s*[\'"]([^\'"]*)[\'"]', 
             re.IGNORECASE
         )
+
+        route_prefixes = {}
+
+        for file in self.get_source_files(context, ".js", ".ts"):
+            text = file.read_text(encoding="utf-8", errors="ignore")
+
+            route_prefixes.update(
+                self.find_express_prefixes(text)
+            )
 
         for file in self.get_source_files(context, ".js", ".ts"):
             text = file.read_text(encoding="utf-8", errors="ignore")
@@ -184,6 +193,7 @@ class ApiEndpointAnalyzer:
                 method = match.group(2).upper()
                 path = match.group(3)
 
+                prefix = route_prefixes.get(router_name, "")
                 handler = self.find_express_handler(text, match.end())
 
                 endpoints.append(
@@ -193,7 +203,7 @@ class ApiEndpointAnalyzer:
                         method=method,
                         path=path,
                         handler=handler,
-                        file=str(file.relative_to(context.project_root))
+                        file=str(file.relative_to(context.repository_root))
                     )
                 )
 
@@ -237,7 +247,26 @@ class ApiEndpointAnalyzer:
                         method=method,
                         path=prefix + path,
                         handler=handler,
-                        file=str(file.relative_to(context.project_root))
+                        file=str(file.relative_to(context.repository_root))
                     )
                 )
         return endpoints
+
+
+    def deduplicate_endpoints(self, endpoints: list[ApiEndpoint]) -> list[ApiEndpoint]:
+        seen = set()
+        unique = []
+    
+        for endpoint in endpoints:
+    
+            key = (
+                endpoint.framework,
+                endpoint.method,
+                endpoint.path
+            )
+    
+            if key not in seen:
+                seen.add(key)
+                unique.append(endpoint)
+    
+        return unique

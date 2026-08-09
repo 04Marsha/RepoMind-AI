@@ -141,7 +141,7 @@ class SecurityAnalyzer:
             re.IGNORECASE
         )
 
-        source_files = self.repository_analyzer.get_source_files(context.project_root)
+        source_files = self.repository_analyzer.get_source_files(context.repository_root)
 
         for file in source_files:
 

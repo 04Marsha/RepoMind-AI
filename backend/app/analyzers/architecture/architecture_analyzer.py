@@ -8,7 +8,7 @@ class ArchitectureAnalyzer:
         self.project_discovery = project_discovery
 
     # DETECTS THE TYPE OF PROJECT
-    def analyze(self, context: RepositoryContext) -> Architecture:
+    def analyze(self, context, overview) -> Architecture:
         architecture = Architecture()
         project_technologies = self.technology_detector.detect(context)
         architecture.layers = self.detect_layers(context)
@@ -50,44 +50,73 @@ class ArchitectureAnalyzer:
         architecture.microservices = backend_projects > 1
 
         # ------- determines the type of architecture of the project -------
-        layers = set(architecture.layers)
-        if {
-            "Controller",
-            "Service",
-            "Repository",
-            "Model"
+        layers = {
+            layer.lower()
+            for layer in architecture.layers
+        }
+        requirements = {
+            dependency.lower()
+            for dependency in overview.dependencies
+        }
+        ml_tools = {
+            "scikit-learn",
+            "tensorflow",
+            "torch",
+            "keras",
+            "xgboost",
+            "joblib",
+            "shap"
+        }
+        if self.has_directories(context,{"shell", "host"}):
+            architecture.style = "Microfrontend"
+        elif {
+            "domain",
+            "application",
+            "infrastructure"
+        }.issubset(layers):
+            architecture.style = "Clean Architecture"
+        elif {
+            "controller",
+            "service",
+            "repository",
+            "model"
         }.issubset(layers):
             architecture.style = "Layered"
         elif {
-            "Controller",
-            "Model"
+            "controller",
+            "model"
         }.issubset(layers):
             architecture.style = "MVC"
-        elif {
-            "Domain",
-            "Application",
-            "Infrastructure"
-        }.issubset(layers):
-            architecture.style = "Clean Architecture"
+        elif any(tool in requirements for tool in ml_tools):
+            architecture.style = "ML Pipeline"
+        elif architecture.project_type in [
+            "Backend",
+            "Full Stack"
+        ]:
+            architecture.style = "Monolith"
         else:
             architecture.style = "Unknown"
 
+        
         #  ------- determines confidence score -------
-        score = sum([
-            architecture.project_type is not None,
-            architecture.style != "Unknown",
-            bool(architecture.layers),
-            bool(project_technologies),
-        ])
+        score = 0
+        if architecture.style != "Unknown":
+            score += 40
+        if architecture.layers:
+            score += 20
+        if len(project_technologies) >= 2:
+            score += 20
+        if architecture.monorepo or architecture.microservices:
+            score += 20
 
-        architecture.confidence = score / 4
+        architecture.confidence = score / 100
         return architecture
 
     # RETURNS THE DIRECTORIES PRESENT IN THE REPO
     def has_directories(self, context: RepositoryContext, *groups):
         existing = {
             folder.name.lower()
-            for folder in context.project_root.rglob("*")
+            for folder in context.repository_root.rglob("*")
             if folder.is_dir()
         }
 
@@ -100,7 +129,7 @@ class ArchitectureAnalyzer:
     def detect_layers(self, context):
         existing = {
             folder.name.lower()
-            for folder in context.project_root.rglob("*")
+            for folder in context.repository_root.rglob("*")
             if folder.is_dir()
         }
 

@@ -31,6 +31,6 @@ class RepositoryService:
 
         repository_metadata = self.repository_analyzer.analyze(repository_context)
 
-        self.repository_indexing_service.index_repository(repository_context.project_root)
+        self.repository_indexing_service.index_repository(repository_context.repository_root)
 
         return repository_metadata

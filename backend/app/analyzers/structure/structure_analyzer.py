@@ -11,8 +11,8 @@ class StructureAnalyzer:
         # GIVES ALL THE DIRECTORIES
         structure.directories = sorted(
             {
-                str(folder.relative_to(context.project_root))
-                for folder in context.project_root.rglob("*")
+                str(folder.relative_to(context.repository_root))
+                for folder in context.repository_root.rglob("*")
                 if folder.is_dir()
             }
         )
@@ -20,8 +20,8 @@ class StructureAnalyzer:
         # GIVES ALL THE IMPORTANT DIRECTORIES
         structure.important_directories = sorted(
             {
-                str(folder.relative_to(context.project_root))
-                for folder in context.project_root.rglob("*")
+                str(folder.relative_to(context.repository_root))
+                for folder in context.repository_root.rglob("*")
                 if folder.is_dir()
                 and folder.name.lower() in IMPORTANT_DIRECTORIES 
             }
@@ -31,7 +31,7 @@ class StructureAnalyzer:
         structure.config_files = sorted(
             {
                 file.name
-                for file in context.project_root.rglob("*")
+                for file in context.repository_root.rglob("*")
                 if file.is_file()
                 and file.name in CONFIGURATION_FILES
             }
@@ -41,7 +41,7 @@ class StructureAnalyzer:
         structure.documentation_files = sorted(
             {
                 file.name
-                for file in context.project_root.rglob("*")
+                for file in context.repository_root.rglob("*")
                 if file.is_file()
                 and file.name in DOCUMENTATION_FILES
             }
