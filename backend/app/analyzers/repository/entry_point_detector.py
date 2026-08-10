@@ -110,6 +110,10 @@ class EntryPointDetector:
             "index.tsx",
             "main.jsx",
             "index.jsx",
+            "App.js",
+            "App.tsx",
+            "index.js",
+            "index.ts"
         ]
 
         indicators = [
@@ -117,6 +121,10 @@ class EntryPointDetector:
             "from 'react-dom/client'",
             "reactdom.render(",
             "strictmode",
+
+            "registerrootcomponent(",
+            "expo",
+            "navigationcontainer",
         ]
 
         entry_points = []

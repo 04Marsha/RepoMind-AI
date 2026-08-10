@@ -43,11 +43,21 @@ class ArchitectureAnalyzer:
 
             if any (tech.category == "backend_framework"
                     for tech in project_stack
-                ):
+            ):
                 backend_projects += 1
 
-        architecture.monorepo = len(projects) > 1
-        architecture.microservices = backend_projects > 1
+        spring_boot_apps = 0
+        for file in context.repository_root.rglob("*.java"):
+            try:
+                text = file.read_text(encoding="utf-8", errors="ignore")
+
+                if "@SpringBootApplication" in text:
+                    spring_boot_apps += 1
+            except OSError:
+                pass
+
+        architecture.monorepo = len(projects) >= 3
+        architecture.microservices = backend_projects > 1 or spring_boot_apps > 1
 
         # ------- determines the type of architecture of the project -------
         layers = {
@@ -67,7 +77,14 @@ class ArchitectureAnalyzer:
             "joblib",
             "shap"
         }
-        if self.has_directories(context,{"shell", "host"}):
+        existing_dirs = {
+            folder.name.lower()
+            for folder in context.repository_root.rglob("*")
+            if folder.is_dir()
+        }
+        has_shell = "shell" in existing_dirs or "host" in existing_dirs
+        has_remotes = any("mfe" in d for d in existing_dirs)
+        if has_shell and has_remotes:
             architecture.style = "Microfrontend"
         elif {
             "domain",
@@ -94,6 +111,8 @@ class ArchitectureAnalyzer:
             "Full Stack"
         ]:
             architecture.style = "Monolith"
+        elif frontend and not backend:
+            architecture.style = "Component-Based"
         else:
             architecture.style = "Unknown"
 
@@ -106,10 +125,12 @@ class ArchitectureAnalyzer:
             score += 20
         if len(project_technologies) >= 2:
             score += 20
-        if architecture.monorepo or architecture.microservices:
+        if architecture.monorepo:
             score += 20
+        if architecture.microservices:
+            score += 10
 
-        architecture.confidence = score / 100
+        architecture.confidence = min(score, 100) / 100
         return architecture
 
     # RETURNS THE DIRECTORIES PRESENT IN THE REPO
@@ -137,7 +158,16 @@ class ArchitectureAnalyzer:
             "Controller": {"controller", "controllers"},
             "Service": {"service", "services"},
             "Repository": {"repository", "repositories", "dao"},
-            "Model": {"model", "models", "entity", "entities"},
+            "Model": {
+                "model",
+                "models",
+                "entity",
+                "entities",
+                "document",
+                "documents",
+                "dto",
+                "dtos"
+            },
             "Route": {"route", "routes"},
             "Middleware": {"middleware", "middlewares"},
             "View": {"view", "views"},

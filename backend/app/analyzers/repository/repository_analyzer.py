@@ -88,11 +88,18 @@ class RepositoryAnalyzer:
 
     # CHECKS IN DOCKER FILE EXISTS
     def detect_docker(self, repo_path: Path) -> bool:
-        return any(
-            file.name.startswith("Dockerfile")
-            for file in repo_path.iterdir()
-            if file.is_file()
-        )
+        docker_files = {
+            "dockerfile",
+            "docker-compose.yml",
+            "docker-compose.yaml",
+            "compose.yml",
+            "compose.yaml",
+        }
+        for file in repo_path.rglob("*"):
+            if file.is_file():
+                if file.name.lower() in docker_files:
+                    return True
+        return False
 
     # CHECKS IF TEST OR TESTS FOLDER EXISTS
     def detect_tests(self, repo_path: Path) -> bool:

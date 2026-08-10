@@ -62,13 +62,21 @@ class DatabaseAnalyzer:
     def detect_sqlalchemy(self, context: RepositoryContext) -> list[DatabaseEntity]:
         entities = []
     
-        pattern = re.compile(r'class\s+([A-Za-z_][A-Za-z0-9_]*)\s*\([^)]*Base[^)]*\)')
+        pattern = re.compile(
+            r'class\s+([A-Za-z_][A-Za-z0-9_]*)\s*\(\s*Base\s*\)'
+        )
     
         for file in self.repository_analyzer.get_source_files(context.repository_root):
             if file.suffix != ".py":
                 continue
     
             text = file.read_text(encoding="utf-8",errors="ignore")
+
+            if (
+                "sqlalchemy" not in text.lower()
+                or "__tablename__" not in text
+            ):
+                continue
     
             for match in pattern.finditer(text):
                 entities.append(

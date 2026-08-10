@@ -14,6 +14,7 @@ class StructureAnalyzer:
                 str(folder.relative_to(context.repository_root))
                 for folder in context.repository_root.rglob("*")
                 if folder.is_dir()
+                and not self._is_ignored(folder)
             }
         )
 
@@ -48,3 +49,19 @@ class StructureAnalyzer:
         )
 
         return structure
+
+    def _is_ignored(self, path):
+        ignored = {
+            ".git",
+            ".vscode",
+            "node_modules",
+            "dist",
+            "build",
+            ".angular",
+            ".next",
+            "__pycache__",
+            "coverage",
+            "target"
+        }
+    
+        return any(part in ignored for part in path.parts)
