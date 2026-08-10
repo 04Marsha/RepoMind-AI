@@ -58,6 +58,8 @@ def repository_intelligence(request: IndexRepositoryRequest, analyzer: Repositor
 
     overall = RepositoryIntelligence()
 
+    overall.package_manager = analyzer.detect_package_manager(repo_path)
+
     for context in projects:
         intelligence = analyzer.analyze(context)
 

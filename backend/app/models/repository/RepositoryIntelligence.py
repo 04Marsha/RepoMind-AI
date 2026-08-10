@@ -11,4 +11,4 @@ class RepositoryIntelligence(BaseModel):
     testing_frameworks: list[str] = Field(default_factory=list)
     build_tools: list[str] = Field(default_factory=list)
     entry_points: list[str] = Field(default_factory=list)
-    package_manager: str | None = None
+    package_manager: list[str] = Field(default_factory=list)

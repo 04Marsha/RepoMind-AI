@@ -63,11 +63,13 @@ class RepositoryIntelligenceAnalyzer:
             "composer.json": "Composer"
         }
 
-        for file, manager in mapping.items():
-            if (repository_root / file).exists():
-                return manager
+        found = []
 
-        return None
+        for file in repository_root.rglob("*"):
+            if file.name in mapping:
+                found.append(mapping[file.name])
+
+        return sorted(set(found))
 
     def determine_primary_language(self, languages: list[str]):
 
