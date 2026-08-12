@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { RouterLink } from '@angular/router';
 
 export interface Agent {
   phase: string;
@@ -10,7 +11,7 @@ export interface Agent {
 
 @Component({
   selector: 'app-agents',
-  imports: [],
+  imports: [RouterLink],
   templateUrl: './agents.html',
   styleUrl: './agents.css',
 })
@@ -21,7 +22,7 @@ export class Agents {
       title: 'Repository Agent',
       description: 'Analyzes repository structure, technologies, dependencies, and code organization.',
       icon: 'repository_agent.png',
-      link: '/repository-agent',
+      link: 'repository-agent',
     },
     // {
     //   phase: 'AGENT 02',

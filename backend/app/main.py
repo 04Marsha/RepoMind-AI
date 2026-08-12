@@ -6,10 +6,19 @@ from fastapi import FastAPI
 from app.api.chat import router as chat_router
 # from app.api.overview import router as overview_router
 from app.api.agents.repository_agent import router as repository_agent_router
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI(
     title="RepoMind AI",
     version="1.0.0"
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:4200"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"]
 )
 
 # app.include_router(index_router)

@@ -83,10 +83,8 @@
     #1e2761
   );
   background-size: 200% auto;
-
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-
   animation: gradientMove 4s linear infinite;
 }
 
