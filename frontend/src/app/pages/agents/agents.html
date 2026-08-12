@@ -1,0 +1,15 @@
+<div class="agents-container">
+  <div class="heading">Agents of RepoMind</div>
+  <div class="subheading">Specialized AI agents collaborate to understand every layer of your repository.</div>
+
+  <div class="agent-grid">
+    @for (agent of agents; track agent.title) {
+      <div class="agent-card">
+        <img class="agent-icon" [src]="'/icons/' + agent.icon" [alt]=agent.title>
+        <div class="agent-phase">{{ agent.phase }}</div>
+        <div class="agent-title">{{ agent.title }}</div>
+        <div class="agent-description">{{ agent.description }}</div>
+      </div>
+    }
+  </div>
+</div>
