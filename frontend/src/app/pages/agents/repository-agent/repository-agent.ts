@@ -2,10 +2,13 @@ import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RepositoryService } from '../../../services/RepositoryService';
 import { DecimalPipe } from '@angular/common';
+import { Router } from '@angular/router';
+import { AnalysisStateService } from '../../../services/AnalysisStateService';
+import { Loader } from '../../../components/loader/loader';
 
 @Component({
   selector: 'app-repository-agent',
-  imports: [FormsModule, DecimalPipe],
+  imports: [FormsModule, Loader],
   templateUrl: './repository-agent.html',
   styleUrl: './repository-agent.css',
 })
@@ -14,14 +17,16 @@ export class RepositoryAgent {
   githubUrl = '';
   analysisResult: any = null;
 
-  constructor(private repositoryService: RepositoryService) {}
+  constructor(private repositoryService: RepositoryService, private router: Router, private analysisStateService: AnalysisStateService) {}
 
   analyze(): void {
+    this.loading = true;
     if (!this.githubUrl.trim()) return;
 
     this.repositoryService.analyzeRepository(this.githubUrl).subscribe({
       next: (response) => {
-        this.analysisResult = response;
+        this.analysisStateService.analysisResult = response;
+        this.router.navigate(['/agents/repository-agent/analysis'])
         this.loading = false;
       },
       error: (error) => {
@@ -29,37 +34,5 @@ export class RepositoryAgent {
         this.loading = false;
       },
     });
-  }
-
-  getScoreColor(score: number): string {
-    if (score >= 95) return '#2563eb';
-    if (score >= 85) return '#10b981';
-    if (score >= 75) return '#22c55e';
-    if (score >= 65) return '#84cc16';
-    if (score >= 55) return '#eab308';
-    if (score >= 45) return '#f59e0b';
-    if (score >= 35) return '#f97316';
-    return '#ef4444';
-  }
-
-  hasData(value: any): boolean {
-    if (value === null || value === undefined) {
-      return false;
-    }
-
-    if (Array.isArray(value)) {
-      return value.length > 0;
-    }
-
-    if (typeof value === 'string') {
-      return value.trim().length > 0;
-    }
-
-    return true;
-  }
-
-  newAnalysis(): void {
-    this.analysisResult = null;
-    this.githubUrl = '';
   }
 }

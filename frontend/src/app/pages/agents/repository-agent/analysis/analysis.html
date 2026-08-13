@@ -1,0 +1,410 @@
+<div class="results-container">
+  <!------ REPO DETAILS  ------>
+  <div class="repo-summary-card">
+    <div class="repo-avatar">
+      {{ analysisResult.overview.repository_name.charAt(0) }}
+    </div>
+
+    <div class="repo-info">
+      <div class="repo-name">
+        {{ analysisResult.overview.repository_name }}
+      </div>
+
+      <div class="repo-description">
+        {{ analysisResult.summary }}
+      </div>
+
+      <div class="tech-tags">
+        @if (hasData(analysisResult.overview.framework)) {
+          @for (framework of analysisResult.overview.framework; track framework) {
+            <span class="tag">{{ framework }}</span>
+          }
+        } @else {
+          <span class="empty-text">Not detected</span>
+        }
+      </div>
+    </div>
+  </div>
+
+  <div class="metrics-section">
+    <h2>Repository Metrics</h2>
+
+    <div class="metrics-grid">
+      <div class="metric-card">
+        <div class="metric-value">
+          {{ getValue(analysisResult.metrics.total_files) }}
+        </div>
+        <div class="metric-label">Total Files</div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-value">
+          {{ getValue(analysisResult.metrics.source_files) }}
+        </div>
+        <div class="metric-label">Source Files</div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-value">
+          {{ getValue(analysisResult.metrics.total_directories) }}
+        </div>
+        <div class="metric-label">Directories</div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-value">
+          {{ getValue(analysisResult.metrics.total_lines) }}
+        </div>
+        <div class="metric-label">Total Lines</div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-value">
+          {{ getValue(analysisResult.metrics.code_lines) }}
+        </div>
+        <div class="metric-label">Code Lines</div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-value">
+          {{ getValue(analysisResult.metrics.comment_lines) }}
+        </div>
+        <div class="metric-label">Comments</div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-value">
+          {{ getValue(analysisResult.metrics.blank_lines) }}
+        </div>
+        <div class="metric-label">Blank Lines</div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-value">
+          {{ getValue(analysisResult.metrics.average_file_size) }}
+        </div>
+        <div class="metric-label">Avg File Size</div>
+      </div>
+    </div>
+  </div>
+
+  <!------ SCORE CONTAINER  ------>
+  <div class="score-grid">
+    <!------ HEALTH SCORE CARD  ------>
+    <div class="score-card">
+      @let healthColor = getScoreColor(analysisResult.health.score);
+      <div class="score-title">Health</div>
+      <div class="score-value" [style.color]="healthColor">
+        {{ analysisResult.health.score }}
+      </div>
+      <div class="progress-bar">
+        <div
+          class="progress-fill"
+          [style.width.%]="analysisResult.health.score"
+          [style.background]="healthColor"
+        ></div>
+      </div>
+      <div class="score-details">
+        @if (hasData(analysisResult.health.strengths)) {
+          @for (strength of analysisResult.health.strengths; track strength) {
+            <div class="positive-item">{{ strength }}</div>
+          }
+        } @else {
+          <span class="empty-text">Not detected</span>
+        }
+
+        @if (hasData(analysisResult.health.issues)) {
+          @for (issue of analysisResult.health.issues; track issue) {
+            <div class="negative-item">{{ issue }}</div>
+          }
+        } @else {
+          <span class="empty-text">Not detected</span>
+        }
+      </div>
+    </div>
+
+    <!------ COMPLEXITY SCORE CARD  ------>
+    <div class="score-card">
+      @let complexityColor = getScoreColor(analysisResult.complexity.score);
+      <div class="score-title">Complexity</div>
+      <div class="score-value" [style.color]="complexityColor">
+        {{ analysisResult.complexity.score }}
+      </div>
+      <div class="progress-bar">
+        <div
+          class="progress-fill"
+          [style.width.%]="analysisResult.complexity.score"
+          [style.background]="complexityColor"
+        ></div>
+      </div>
+      <div class="score-details">
+        <div class="complexity-level">
+          {{ analysisResult.complexity.level }}
+        </div>
+        @if (hasData(analysisResult.complexity.reasons)) {
+          @for (reason of analysisResult.complexity.reasons; track reason) {
+            <div class="neutral-item">• {{ reason }}</div>
+          }
+        } @else {
+          <span class="empty-text">Not detected</span>
+        }
+      </div>
+    </div>
+
+    <!------ SECURITY SCORE CARD  ------>
+    <div class="score-card">
+      @let securityColor = getScoreColor(analysisResult.security.score);
+      <div class="score-title">Security</div>
+      <div class="score-value" [style.color]="securityColor">
+        {{ analysisResult.security.score }}
+      </div>
+      <div class="progress-bar">
+        <div
+          class="progress-fill"
+          [style.width.%]="analysisResult.security.score"
+          [style.background]="securityColor"
+        ></div>
+      </div>
+      <div class="score-details">
+        @if (hasData(analysisResult.security.findings)) {
+          @for (finding of analysisResult.security.findings; track finding) {
+            <div class="positive-item">{{ finding }}</div>
+          }
+        } @else {
+          <span class="empty-text">Not detected</span>
+        }
+
+        @if (hasData(analysisResult.security.warnings)) {
+          @for (warning of analysisResult.security.warnings; track warning) {
+            <div class="negative-item">{{ warning }}</div>
+          }
+        } @else {
+          <span class="empty-text">Not detected</span>
+        }
+      </div>
+    </div>
+  </div>
+
+  <!------ TECHNOLOGY CONTAINER ------>
+  <div class="tech-stack-section">
+    <h2 class="section-title">Technology Stack</h2>
+
+    <div class="stack-cards">
+      <div class="stack-card">
+        <div class="stack-card-title">Frontend</div>
+
+        <div class="tech-tags">
+          @if (hasData(analysisResult.intelligence.frontend_frameworks)) {
+            @for (item of analysisResult.intelligence.frontend_frameworks; track item) {
+              <span class="tag">{{ item }}</span>
+            }
+          } @else {
+            <span class="empty-text">Not detected</span>
+          }
+        </div>
+      </div>
+
+      <div class="stack-card">
+        <div class="stack-card-title">Backend</div>
+
+        <div class="tech-tags">
+          @if (hasData(analysisResult.intelligence.backend_frameworks)) {
+            @for (item of analysisResult.intelligence.backend_frameworks; track item) {
+              <span class="tag">{{ item }}</span>
+            }
+          } @else {
+            <span class="empty-text">Not detected</span>
+          }
+        </div>
+      </div>
+
+      <div class="stack-card">
+        <div class="stack-card-title">Database</div>
+
+        <div class="tech-tags">
+          @if (hasData(analysisResult.intelligence.databases)) {
+            @for (item of analysisResult.intelligence.databases; track item) {
+              <span class="tag">{{ item }}</span>
+            }
+          } @else {
+            <span class="empty-text">Not detected</span>
+          }
+        </div>
+      </div>
+
+      <div class="stack-card">
+        <div class="stack-card-title">ORM</div>
+
+        <div class="tech-tags">
+          @if (hasData(analysisResult.intelligence.orms)) {
+            @for (item of analysisResult.intelligence.orms; track item) {
+              <span class="tag">{{ item }}</span>
+            }
+          } @else {
+            <span class="empty-text">Not detected</span>
+          }
+        </div>
+      </div>
+
+      <div class="stack-card">
+        <div class="stack-card-title">Testing</div>
+
+        <div class="tech-tags">
+          @if (hasData(analysisResult.intelligence.testing_frameworks)) {
+            @for (item of analysisResult.intelligence.testing_frameworks; track item) {
+              <span class="tag">{{ item }}</span>
+            }
+          } @else {
+            <span class="empty-text">Not detected</span>
+          }
+        </div>
+      </div>
+
+      <div class="stack-card">
+        <div class="stack-card-title">Build Tools</div>
+
+        <div class="tech-tags">
+          @if (hasData(analysisResult.intelligence.build_tools)) {
+            @for (item of analysisResult.intelligence.build_tools; track item) {
+              <span class="tag">{{ item }}</span>
+            }
+          } @else {
+            <span class="empty-text">Not detected</span>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!------ ENTRY POINTS AND KEY INSIGHTS CONTAINER  ------>
+  <div class="details-grid">
+    <!------ ENTRY POINTS  ------>
+    <div class="dashboard-card">
+      <h3>Entry Points</h3>
+
+      <div class="entry-list">
+        @if (hasData(analysisResult.intelligence.entry_points)) {
+          @for (entry of analysisResult.intelligence.entry_points; track entry) {
+            <div class="entry-item">
+              <div class="entry-icon">▶</div>
+
+              <div class="entry-path">
+                {{ entry }}
+              </div>
+            </div>
+          }
+        } @else {
+          <span class="empty-text">Not detected</span>
+        }
+      </div>
+    </div>
+
+    <!------ KEY INSIGHTS  ------>
+    <div class="dashboard-card">
+      <h3>Key Insights</h3>
+
+      <div class="insights-list">
+        @if (hasData(analysisResult.insights.insights)) {
+          @for (insight of analysisResult.insights.insights; track insight) {
+            <div class="insight-item">
+              <div class="insight-icon">✦</div>
+
+              <div class="insight-text">
+                {{ insight }}
+              </div>
+            </div>
+          }
+        } @else {
+          <span class="empty-text">Not detected</span>
+        }
+      </div>
+    </div>
+  </div>
+
+  <!------ ARCHITECTURE AND DATABASE ENTITIES CONTAINER  ------>
+  <div class="details-grid">
+    <!------ ARCHITECTURE  ------>
+    <div class="dashboard-card">
+      <h3>Architecture & API</h3>
+
+      <div class="architecture-badges">
+        <span class="badge">
+          {{ analysisResult.architecture.style }}
+        </span>
+
+        <span class="badge"> {{ analysisResult.database.entities.length }} Entities </span>
+
+        <span class="badge"> {{ analysisResult.api_analysis.endpoints.length }} Endpoints </span>
+      </div>
+
+      <div class="api-list">
+        @if (hasData(analysisResult.api_analysis.endpoints)) {
+          @for (endpoint of analysisResult.api_analysis.endpoints; track endpoint.handler) {
+            <div class="api-card">
+              <div class="api-top-row">
+                <span
+                  class="endpoint-method"
+                  [class.post]="endpoint.method === 'POST'"
+                  [class.get]="endpoint.method === 'GET'"
+                  [class.put]="endpoint.method === 'PUT'"
+                  [class.delete]="endpoint.method === 'DELETE'"
+                >
+                  {{ endpoint.method }}
+                </span>
+
+                <span class="endpoint-path">
+                  {{ endpoint.path || '/' }}
+                </span>
+              </div>
+
+              <div class="endpoint-handler">
+                {{ endpoint.handler }}
+              </div>
+
+              <div class="endpoint-meta">
+                <span>{{ endpoint.framework }}</span>
+
+                <span>{{ endpoint.file }}</span>
+              </div>
+            </div>
+          }
+        } @else {
+          <span class="empty-text">Not detected</span>
+        }
+      </div>
+    </div>
+
+    <!------ DATABASE ENTITIES  ------>
+    <div class="dashboard-card">
+      <h3>Database Entities</h3>
+
+      <div class="entities-list">
+        @if (hasData(analysisResult.database.entities)) {
+          @for (entity of analysisResult.database.entities; track entity.name) {
+            <div class="entity-card">
+              <div class="entity-header">
+                <div class="entity-name">
+                  {{ entity.name }}
+                </div>
+
+                <div class="entity-type">
+                  {{ entity.type }}
+                </div>
+              </div>
+
+              <div class="entity-file">
+                {{ entity.file }}
+              </div>
+            </div>
+          }
+        } @else {
+          <span class="empty-text">Not detected</span>
+        }
+      </div>
+    </div>
+  </div>
+
+  <div class="results-header">
+    <button class="blue-button" (click)="newAnalysis()">New Analysis</button>
+  </div>
+</div>

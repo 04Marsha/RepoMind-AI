@@ -17,5 +17,11 @@ export const routes: Routes = [
         loadComponent: () => 
             import('./pages/agents/repository-agent/repository-agent')
         .then(m => m.RepositoryAgent)
+    },
+    {
+        path: 'agents/repository-agent/analysis',
+        loadComponent: () => 
+            import('./pages/agents/repository-agent/analysis/analysis')
+        .then(m => m.Analysis)
     }
 ];

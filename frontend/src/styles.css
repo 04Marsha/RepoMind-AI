@@ -1,49 +1,63 @@
 /* You can add global styles to this file, and also import other style files */
 * {
-    padding: 0;
-    margin: 0;
+  padding: 0;
+  margin: 0;
+}
+
+/* LOADER */
+.loader-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 800px;
 }
 
 /* HEADER BLUE BUTTON */
 .header-blue-button {
-    background-color: #4F5FFF;
-    outline: none;
-    border: none;
-    padding: 10px 30px;
-    border-radius: 13px;
-    font-size: 17px;
-    color: #F4F6FB;
-    font-family: "Space Grotesk";
-    font-weight: 700;
-    cursor: pointer;
+  background-color: #4f5fff;
+  outline: none;
+  border: none;
+  padding: 10px 30px;
+  border-radius: 13px;
+  font-size: 17px;
+  color: #f4f6fb;
+  font-family: 'Space Grotesk';
+  font-weight: 700;
+  cursor: pointer;
 }
 
 /* BLUE BUTTON */
 .blue-button {
-    background-color: #4F5FFF;
-    outline: none;
-    border: none;
-    padding: 14px 30px;
-    border-radius: 13px;
-    font-size: 20px;
-    color: #F4F6FB;
-    font-family: "Space Grotesk";
-    font-weight: 700;
-    cursor: pointer;
+  background-color: #4f5fff;
+  outline: none;
+  border: none;
+  padding: 14px 30px;
+  border-radius: 13px;
+  font-size: 20px;
+  color: #f4f6fb;
+  font-family: 'Space Grotesk';
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.blue-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  box-shadow: none;
 }
 
 /* GREY BUTTON */
 .grey-button {
-    outline: none;
-    padding: 14px 30px;
-    border-radius: 13px;
-    font-size: 20px;
-    font-family: "Space Grotesk";
-    border: none;
-    cursor: pointer;
-    color: #1e2761;
-    background-color: #a3aab792;
-    font-weight: 500;
+  outline: none;
+  padding: 14px 30px;
+  border-radius: 13px;
+  font-size: 20px;
+  font-family: 'Space Grotesk';
+  border: none;
+  cursor: pointer;
+  color: #1e2761;
+  background-color: #a3aab792;
+  font-weight: 500;
 }
 
 .blue-button,
