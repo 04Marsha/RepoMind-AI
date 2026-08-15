@@ -4,7 +4,7 @@
 from datetime import datetime, timezone
 from fastapi import FastAPI
 # from app.api.chat import router as chat_router
-from app.api.agents.repository_agent import router as repository_agent_router
+# from app.api.agents.repository_agent import router as repository_agent_router
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI(
@@ -14,7 +14,10 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[
+        "http://localhost:4200",
+        "https://04marsha.github.io"
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"]
@@ -34,4 +37,4 @@ def health_check():
 
 
 # app.include_router(chat_router)
-app.include_router(repository_agent_router)
+# app.include_router(repository_agent_router)
