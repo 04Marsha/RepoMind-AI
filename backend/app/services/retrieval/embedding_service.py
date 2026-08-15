@@ -6,13 +6,18 @@ from app.models.repository.EmbeddedChunk import EmbeddedChunk
 class EmbeddingService:
 
     def __init__(self):
-        self.model = SentenceTransformer("BAAI/bge-small-en-v1.5")
+        self.model = None
+
+    def get_model(self):
+        if self.model is None:
+            self.model = SentenceTransformer("BAAI/bge-small-en-v1.5")
+        return self.model
 
     # ACCEPTS THE LIST OF TEXTCHUNKS AND EMBEDS THEM INTO A LIST OF NUMBERS
     def embed_chunks(self, chunks: list[TextChunk]) -> list[EmbeddedChunk]:
         texts = [chunk.content for chunk in chunks]
 
-        embeddings = self.model.encode(texts)
+        embeddings = self.get_model().encode(texts)
 
         embedded_chunks = []
 
@@ -30,6 +35,6 @@ class EmbeddingService:
 
     # EMBEDS TEXT
     def embed_text(self, text: str) -> list[float]:
-        embedding = self.model.encode(text)
+        embedding = self.get_model().encode(text)
         return embedding.tolist()
 
