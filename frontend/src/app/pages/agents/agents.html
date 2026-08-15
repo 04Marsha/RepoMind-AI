@@ -5,7 +5,7 @@
   <div class="agent-grid">
     @for (agent of agents; track agent.title) {
       <div class="agent-card" [routerLink]=agent.link>
-        <img class="agent-icon" [src]="'/icons/' + agent.icon" [alt]=agent.title>
+        <img class="agent-icon" [src]="'icons/' + agent.icon" [alt]=agent.title>
         <div class="agent-phase">{{ agent.phase }}</div>
         <div class="agent-title">{{ agent.title }}</div>
         <div class="agent-description">{{ agent.description }}</div>
