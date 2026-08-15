@@ -3,8 +3,8 @@
 
 from datetime import datetime, timezone
 from fastapi import FastAPI
-from app.api.chat import router as chat_router
-from app.api.agents.repository_agent import router as repository_agent_router
+# from app.api.chat import router as chat_router
+# from app.api.agents.repository_agent import router as repository_agent_router
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI(
@@ -33,5 +33,5 @@ def health_check():
     }
 
 
-app.include_router(chat_router)
-app.include_router(repository_agent_router)
+# app.include_router(chat_router)
+# app.include_router(repository_agent_router)
