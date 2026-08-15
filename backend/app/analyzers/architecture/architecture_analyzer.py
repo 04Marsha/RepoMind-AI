@@ -56,7 +56,7 @@ class ArchitectureAnalyzer:
             except OSError:
                 pass
 
-        architecture.monorepo = len(projects) >= 3
+        architecture.monorepo = (architecture.full_stack and len(projects) >= 2)
         architecture.microservices = backend_projects > 1 or spring_boot_apps > 1
 
         # ------- determines the type of architecture of the project -------
@@ -92,12 +92,13 @@ class ArchitectureAnalyzer:
             "infrastructure"
         }.issubset(layers):
             architecture.style = "Clean Architecture"
-        elif {
+        elif len({
             "controller",
             "service",
             "repository",
             "model"
-        }.issubset(layers):
+        }.intersection(layers)
+        ) >= 3:
             architecture.style = "Layered"
         elif {
             "controller",

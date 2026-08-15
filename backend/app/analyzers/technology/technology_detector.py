@@ -11,7 +11,7 @@ class TechnologyDetector:
 
     def detect(self, context):
         detected = {}
-        dependency_names = set(self.dependency_parser.parse(context.repository_root))
+        dependency_names = set(self.dependency_parser.parse(context.project_root))
         config_files = self.find_config_files(context)
         imports = self.scan_imports(context)
 
@@ -28,7 +28,7 @@ class TechnologyDetector:
 
     def find_config_files(self, context):
         config_files = set()
-        for file in context.repository_root.rglob("*"):
+        for file in context.project_root.rglob("*"):
             if file.is_file():
                 config_files.add(file.name)
         return config_files
@@ -45,7 +45,7 @@ class TechnologyDetector:
         java_import = re.compile(
             r"^\s*import\s+([A-Za-z0-9_.]+);", re.MULTILINE)
         
-        for file in context.repository_root.rglob("*"):
+        for file in context.project_root.rglob("*"):
 
             if not file.is_file():
                 continue

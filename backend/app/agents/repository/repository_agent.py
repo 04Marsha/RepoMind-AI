@@ -15,6 +15,7 @@ from app.analyzers.repository.repository_health_analyzer import RepositoryHealth
 from app.analyzers.metrics.complexity_analyzer import ComplexityAnalyzer
 from app.analyzers.repository.insights_analyzer import InsightsAnalyzer
 from app.models.repository.RepositorySecurity import RepositorySecurity
+from app.models.repository.RepositoryContext import RepositoryContext
 
 class RepositoryAgent:
 
@@ -48,8 +49,7 @@ class RepositoryAgent:
         self.security_analyzer = security_analyzer
 
     # GETS THE OVERVIEW FOR THE REPO
-    def get_repository_overview(self, repo_path: Path) -> RepositoryOverview:
-        context = context = self.project_discovery.discover(repo_path)
+    def get_repository_overview(self, context: RepositoryContext) -> RepositoryOverview:
 
         metadata = self.repository_analyzer.analyze(context)
         intelligence=self.repository_intelligence_analyzer.analyze(context)
@@ -60,9 +60,9 @@ class RepositoryAgent:
             languages=metadata.languages,
             framework=(intelligence.backend_frameworks + intelligence.frontend_frameworks),
             total_files=self.repository_analyzer.count_files(context.repository_root),
-            total_directories=self.repository_analyzer.count_directories(repo_path),
-            source_files=self.repository_analyzer.count_source_files(repo_path),
-            documentation_files=self.repository_analyzer.count_documentation_files(repo_path),
+            total_directories=self.repository_analyzer.count_directories(context.repository_root),
+            source_files=self.repository_analyzer.count_source_files(context.repository_root),
+            documentation_files=self.repository_analyzer.count_documentation_files(context.repository_root),
             configuration_files=self.repository_analyzer.count_configuration_files(context.repository_root),
             has_readme=metadata.has_readme,
             has_license=metadata.has_license,
@@ -73,8 +73,15 @@ class RepositoryAgent:
 
     # COMBINES ALL THE INFO FROM THE ANALYZERS
     def analyze_repository(self, repo_path: Path) -> RepositoryAgentModel:
-        context = self.project_discovery.discover(repo_path)
-        overview = self.get_repository_overview(repo_path)
+        context = RepositoryContext(
+            repository_root=repo_path,
+            repository_name=repo_path.name,
+            project_root=repo_path,
+            project_name=repo_path.name,
+            score=100,
+            confidence=1.0
+        )    
+        overview = self.get_repository_overview(context)
         intelligence = self.repository_intelligence_analyzer.analyze(context)
         structure = self.structure_analyzer.analyze(context)
         metrics = self.metrics_analyzer.analyze(context)

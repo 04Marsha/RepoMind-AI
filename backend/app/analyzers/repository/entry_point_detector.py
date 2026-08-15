@@ -51,6 +51,7 @@ class EntryPointDetector:
         indicators = [
             '__name__ == "__main__"',
             "uvicorn.run(",
+            "fastapi(",
         ]
 
         for file in context.repository_root.rglob("*.py"):
