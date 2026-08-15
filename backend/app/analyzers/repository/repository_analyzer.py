@@ -74,7 +74,7 @@ class RepositoryAnalyzer:
     def detect_readme(self, repo_path: Path) -> bool:
         return any (
             file.name.lower() == "readme.md"
-            for file in repo_path.iterdir()
+            for file in repo_path.rglob("*")
             if file.is_file()
         )
 
@@ -103,6 +103,17 @@ class RepositoryAnalyzer:
 
     # CHECKS IF TEST OR TESTS FOLDER EXISTS
     def detect_tests(self, repo_path: Path) -> bool:
+        for file in repo_path.rglob("*"):
+            if file.is_file():
+                if (
+                    file.name.endswith(".spec.ts")
+                    or file.name.endswith(".test.ts")
+                    or file.name.endswith(".spec.js")
+                    or file.name.endswith(".test.js")
+                    or file.name.endswith("_test.py")
+                    or file.name.startswith("test_")
+                ):
+                    return True
         return (
             self.directory_exists(repo_path, "test")
             or self.directory_exists(repo_path, "tests")
@@ -208,7 +219,12 @@ class RepositoryAnalyzer:
 
     # RETURNS ALL DOCUMENTATION FILES
     def get_documentation_files(self, repo_path: Path) -> list[Path]:
-        return self.get_files(repo_path, DOCUMENTATION_FILES)
+        return [
+            file
+            for file in repo_path.rglob("*")
+            if file.is_file()
+            and file.name in DOCUMENTATION_FILES
+        ]
 
     # COUNTS ALL DOCUMENTATION FILES
     def count_documentation_files(self, repo_path: Path) -> int:
@@ -216,7 +232,12 @@ class RepositoryAnalyzer:
 
     # RETURNS ALL CONFIGURATION FILES
     def get_configuration_files(self, repo_path: Path) -> list[Path]:
-        return self.get_files(repo_path, CONFIGURATION_FILES)
+        return [
+            file
+            for file in repo_path.rglob("*")
+            if file.is_file()
+            and file.name in CONFIGURATION_FILES
+        ]
 
     # COUNTS ALL CONFIGURATION FILES
     def count_configuration_files(self, repo_path: Path) -> int:
