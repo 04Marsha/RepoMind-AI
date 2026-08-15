@@ -1,7 +1,7 @@
 # TMPDIR=$HOME/pip-temp pip install sentence-transformers
 # uvicorn app.main:app --reload --reload-dir app
 
-from datetime import datetime
+from datetime import datetime, timezone
 from fastapi import FastAPI
 from app.api.chat import router as chat_router
 from app.api.agents.repository_agent import router as repository_agent_router
@@ -20,12 +20,16 @@ app.add_middleware(
     allow_headers=["*"]
 )
 
+@app.get("/")
+def root():
+    return {"status": "ok"}
+
 @app.get("/health")
 def health_check():
     return {
         "success": True,
         "status": "ok",
-        "timestamp": datetime.utcnow().isoformat()
+        "timestamp": datetime.now(timezone.utc).isoformat()
     }
 
 
