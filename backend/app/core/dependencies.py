@@ -1,3 +1,5 @@
+print("dependencies.py started")
+
 from app.services.github.github_service import GithubService
 from app.analyzers.repository.repository_analyzer import RepositoryAnalyzer
 from app.services.retrieval.chunking_service import ChunkingService
@@ -26,9 +28,16 @@ from app.analyzers.repository.insights_analyzer import InsightsAnalyzer
 from app.analyzers.repository.security_analyzer import SecurityAnalyzer
 from app.analyzers.repository.entry_point_detector import EntryPointDetector
 
+print("Creating GithubService")
 github_service = GithubService()
+
+print("Creating ChunkingService")
 chunking_service = ChunkingService()
+
+print("Creating EmbeddingService")
 embedding_service = EmbeddingService()
+
+print("Creating VectorStore")
 vector_store = VectorStore()
 project_discovery = ProjectDiscovery()
 dependency_parser = DependencyParser()
@@ -45,6 +54,7 @@ repository_indexing_service = RepositoryIndexingService(
     vector_store=vector_store
 )
 
+print("Creating RepositoryService")
 repository_service = RepositoryService(
     github_service=github_service,
     repository_analyzer=repository_analyzer,
@@ -152,3 +162,4 @@ def get_repository_agent():
         insights_analyzer=insights_analyzer,
         security_analyzer=security_analyzer
     )
+print("dependencies.py finished")
