@@ -1,3 +1,5 @@
-main {
-    padding-top: 72px;
+.app-content {
+  height: calc(100vh - 70px);
+  margin-top: 72px;
+  overflow-y: auto;
 }

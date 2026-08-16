@@ -2,9 +2,10 @@
 * {
   padding: 0;
   margin: 0;
+  overflow: hidden;
 }
 
-/* LOADER */
+/*----------------------------------- LOADER -----------------------------------*/
 .loader-container {
   display: flex;
   align-items: center;
@@ -12,6 +13,33 @@
   min-height: 800px;
 }
 
+/*----------------------------------- SCROLLBAR -----------------------------------*/
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #2563eb #f8fafc;
+}
+
+/* Chrome, Edge, Safari */
+::-webkit-scrollbar {
+  width: 14px;
+}
+
+::-webkit-scrollbar-track {
+  background: #eef2ff;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1e2761;
+  border-radius: 999px;
+  border: 2px solid #eef2ff;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #2563eb;
+}
+
+/*----------------------------------- BUTTONS -----------------------------------*/
 /* HEADER BLUE BUTTON */
 .header-blue-button {
   background-color: #4f5fff;
@@ -74,7 +102,6 @@
 @media (max-width: 1024px) {
   .blue-button:hover,
   .grey-button:hover {
-    /* transform: translateY(-2px); */
     transform: none;
     transition: none;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
