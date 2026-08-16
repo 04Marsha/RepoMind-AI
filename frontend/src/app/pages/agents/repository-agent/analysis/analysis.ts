@@ -6,7 +6,7 @@ import { AnalysisStateService } from '../../../../services/AnalysisStateService'
   selector: 'app-analysis',
   imports: [],
   templateUrl: './analysis.html',
-  styleUrl: './analysis.css',
+  styleUrls: ['./analysis.css', './analysis.media.css'],
 })
 export class Analysis implements OnInit {
   constructor(private router: Router, private analysisStateService: AnalysisStateService) {}
