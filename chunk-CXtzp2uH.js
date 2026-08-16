@@ -1,0 +1,1 @@
+import{S as N}from"./main-3HFEIVKZ.js";var n=class t{analysisResult=null;static ɵfac=function(o){return new(o||t)};static ɵprov=N({token:t,factory:t.ɵfac,providedIn:`root`})};export{n as t};
