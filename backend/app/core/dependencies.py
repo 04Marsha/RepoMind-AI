@@ -3,8 +3,8 @@ print("dependencies.py started")
 from app.services.github.github_service import GithubService
 from app.analyzers.repository.repository_analyzer import RepositoryAnalyzer
 from app.services.retrieval.chunking_service import ChunkingService
-from app.services.retrieval.embedding_service import EmbeddingService
-from app.services.retrieval.vector_store import VectorStore
+# from app.services.retrieval.embedding_service import EmbeddingService
+# from app.services.retrieval.vector_store import VectorStore
 from app.services.repository.repository_service import RepositoryService
 from app.services.chat.chat_service import ChatService
 from app.services.llm.llm_service import LLMService
@@ -35,10 +35,12 @@ print("Creating ChunkingService")
 chunking_service = ChunkingService()
 
 print("Creating EmbeddingService")
-embedding_service = EmbeddingService()
+# embedding_service = EmbeddingService()
+embedding_service = None
 
 print("Creating VectorStore")
-vector_store = VectorStore()
+# vector_store = VectorStore()
+vector_store = None
 project_discovery = ProjectDiscovery()
 dependency_parser = DependencyParser()
 entry_point_detector = EntryPointDetector()
